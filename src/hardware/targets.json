@@ -24,6 +24,46 @@
             }
         }
     },
+    "alz": {
+        "name": "alz",
+        "tx_2400": {
+            "micro1w": {
+                "product_name": "Alz 2.4GHz 1W Micro TX",
+                "lua_name": "Alz 2G4Micro1W",
+                "layout_file": "Alz 2400 Micro 1W.json",
+                "features": ["fan"],
+                "upload_methods": ["uart", "wifi"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_2400_TX",
+                "prior_target_name": "Alz_2400_TX_MICRO_1000mw"
+            }
+        },
+        "rx_2400": {
+            "nano": {
+                "product_name": "Alz 2.4GHz Nano RX",
+                "lua_name": "Alz Nano 2G4RX",
+                "layout_file": "Generic 2400 PA.json",
+                "overlay": {
+                    "radio_dcdc": true
+                },
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp8285",
+                "firmware": "Unified_ESP8285_2400_RX",
+                "prior_target_name": "Alz_2400_RX"
+            },
+            "pa-rgb": {
+                "product_name": "Alz 2.4Ghz RX RGB",
+                "lua_name": "Alz 2G4RX RGB",
+                "layout_file": "Generic 2400 PA RGB.json",
+                "overlay": {
+                    "radio_dcdc": true
+                },
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp8285",
+                "firmware": "Unified_ESP8285_2400_RX"
+            }
+        }
+    },
     "betafpv": {
         "name": "BETAFPV",
         "tx_900": {
