@@ -83,8 +83,7 @@
                 },
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp8285",
-                "firmware": "Unified_ESP8285_2400_RX",
-                "prior_target_name": "Alz_2400_RX"
+                "firmware": "Unified_ESP8285_2400_RX"
             },
             "max-nano": {
                 "product_name": "Alz 2.4GHz Nano RX MAX",
@@ -95,8 +94,7 @@
                 },
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp8285",
-                "firmware": "Unified_ESP8285_2400_RX",
-                "prior_target_name": "Alz_2400_RX"
+                "firmware": "Unified_ESP8285_2400_RX"
             },
             "pa-rgb": {
                 "product_name": "Alz 2.4Ghz RX RGB",
