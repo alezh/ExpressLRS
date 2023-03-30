@@ -64,7 +64,7 @@
         "tx_2400": {
             "micro1w": {
                 "product_name": "Alz 2.4GHz 1W Micro TX",
-                "lua_name": "Alz 2G4Micro1W",
+                "lua_name": "Alz 2G4 TX 1W",
                 "layout_file": "Alz 2400 Micro 1W.json",
                 "features": ["fan"],
                 "upload_methods": ["uart", "wifi"],
@@ -76,7 +76,7 @@
         "rx_2400": {
             "nano": {
                 "product_name": "Alz 2.4GHz Nano RX",
-                "lua_name": "Alz Nano 2G4RX",
+                "lua_name": "Alz Nano2G4RX",
                 "layout_file": "Generic 2400 PA.json",
                 "overlay": {
                     "radio_dcdc": true
@@ -87,7 +87,7 @@
             },
             "max-nano": {
                 "product_name": "Alz 2.4GHz Nano RX MAX",
-                "lua_name": "Alz Nano 2G4RX Max",
+                "lua_name": "Alz Nano2G4RXMax",
                 "layout_file": "Generic 2400 PA MAX.json",
                 "overlay": {
                     "radio_dcdc": true
@@ -98,14 +98,35 @@
             },
             "pa-rgb": {
                 "product_name": "Alz 2.4Ghz RX RGB",
-                "lua_name": "Alz 2G4RX RGB",
-                "layout_file": "Generic 2400 PA RGB.json",
+                "lua_name": "Alz 2G4RXMaxRGB",
+                "layout_file": "Generic 2400 PA MAX RGB.json",
                 "overlay": {
                     "radio_dcdc": true
                 },
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp8285",
                 "firmware": "Unified_ESP8285_2400_RX"
+            }
+        },
+        "tx_900": {
+            "micro900": {
+                "product_name": "Alz 900MHz TX",
+                "lua_name": "Alz 900 Tx 1W",
+                "layout_file": "Alz 900.json",
+                "features": ["fan"],
+                "upload_methods": ["uart", "wifi"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_900_TX"
+            }
+        },
+        "rx_900": {
+            "plain": {
+                "product_name": "Alz 900MHz RX",
+                "lua_name": "Alz 900RX",
+                "layout_file": "Alz 900.json",
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp8285",
+                "firmware": "Unified_ESP8285_900_RX"
             }
         }
     },
