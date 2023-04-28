@@ -594,9 +594,9 @@ static void corsPreflightResponse(AsyncWebServerRequest *request) {
 }
 
 static void WebUploadResponseHandler(AsyncWebServerRequest *request) {
-  if (target_seen) {
+  if (target_seen || Update.hasError()) {
     String msg;
-    if (Update.end()) {
+    if (!Update.hasError() && Update.end()) {
       DBGLN("Update complete, rebooting");
       msg = String("{\"status\": \"ok\", \"msg\": \"Update complete. ");
       #if defined(TARGET_RX)
@@ -791,7 +791,7 @@ static void startWiFi(unsigned long now)
     hwTimer::stop();
 
 #ifdef HAS_VTX_SPI
-    VTxOutputMinimum();
+    disableVTxSpi();
 #endif
 
     // Set transmit power to minimum

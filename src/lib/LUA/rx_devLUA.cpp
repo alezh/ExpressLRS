@@ -18,7 +18,7 @@ static const char *rxModes = "50Hz;60Hz;100Hz;160Hz;333Hz;400Hz;10kHzDuty;On/Off
 static struct luaItem_selection luaSerialProtocol = {
     {"Protocol", CRSF_TEXT_SELECTION},
     0, // value
-    "CRSF;Inverted CRSF;SBUS;Inverted SBUS",
+    "CRSF;Inverted CRSF;SBUS;Inverted SBUS;SUMD",
     STR_EMPTYSPACE
 };
 
@@ -363,7 +363,7 @@ static int event()
   }
 
 #if defined(POWER_OUTPUT_VALUES)
-  setLuaTextSelectionValue(&luaTlmPower, config.GetPower());
+  setLuaTextSelectionValue(&luaTlmPower, config.GetPower() - MinPower);
 #endif
   setLuaTextSelectionValue(&luaRateInitIdx, RATE_MAX - 1 - config.GetRateInitialIdx());
 

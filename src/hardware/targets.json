@@ -610,7 +610,7 @@
         "name": "Generic targets used as a base",
         "tx_900": {
             "gemini": {
-                "product_name": "Generic ESP32 900Ghz Gemini TX",
+                "product_name": "Generic ESP32 900MHz Gemini TX",
                 "lua_name": "Gemini 900TX",
                 "layout_file": "Generic 900 Gemini.json",
                 "upload_methods": ["uart", "wifi", "etx"],
@@ -639,9 +639,17 @@
                 "prior_target_name": "DIY_900_RX_PWMP"
             },
             "true_diversity": {
-                "product_name": "Generic ESP32 True Diversity PA 900Mhz RX",
+                "product_name": "Generic ESP32 True Diversity PA 900MHz RX",
                 "lua_name": "Diversity 900RX",
                 "layout_file": "Generic 900 True Diversity PA.json",
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_900_RX"
+            },
+            "true_diversity_pwm16": {
+                "product_name": "Generic ESP32 True Diversity 16xPWM 900MHz RX ",
+                "lua_name": "16PWM TD 900RX",
+                "layout_file": "Generic 900 True Diversity PWM 16.json",
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_900_RX"
@@ -945,6 +953,24 @@
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_2400_RX"
+            },
+            "epw5": {
+                "product_name": "HappyModel EPW5 2.4GHz PWM RX",
+                "lua_name": "HM EPW5 2400",
+                "layout_file": "Generic 2400 PWMP5.json",
+                "upload_methods": ["uart", "wifi"],
+                "platform": "esp8285",
+                "firmware": "Unified_ESP8285_2400_RX",
+                "prior_target_name": "DIY_2400_RX_PWMP"
+            },
+            "epw6": {
+                "product_name": "HappyModel EPW6 2.4GHz PWM RX",
+                "lua_name": "HM EPW6 2400",
+                "layout_file": "Generic 2400 PWMP6.json",
+                "upload_methods": ["uart", "wifi"],
+                "platform": "esp8285",
+                "firmware": "Unified_ESP8285_2400_RX",
+                "prior_target_name": "DIY_2400_RX_PWMPEX"
             }
         }
     },
@@ -1389,6 +1415,19 @@
             }
         }
     },
+    "newbeedrone": {
+        "name": "NewBeeDrone",
+        "rx_2400": {
+            "rx24d": {
+                "product_name": "NewBeeDrone Diversity 2.4Ghz RX",
+                "lua_name": "NBD 2400RX",
+                "layout_file": "Generic 2400 Diversity PA.json",
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp8285",
+                "firmware": "Unified_ESP8285_2400_RX"
+            }
+        }
+    },
     "quadkopters": {
         "name": "QuadKopters",
         "tx_2400": {
@@ -1424,7 +1463,7 @@
         }
     },
     "radiomaster": {
-        "name": "Radiomaster",
+        "name": "RadioMaster",
         "tx_2400": {
             "zorro": {
                 "product_name": "RadioMaster Zorro 2.4GHz TX",
