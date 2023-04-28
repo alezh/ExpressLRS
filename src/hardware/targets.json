@@ -127,6 +127,14 @@
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp8285",
                 "firmware": "Unified_ESP8285_900_RX"
+            },
+            "nano": {
+                "product_name": "Alz 900MHz Nano RX",
+                "lua_name": "Alz Nano900RX",
+                "layout_file": "Generic 900 PA RGB.json",
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp8285",
+                "firmware": "Unified_ESP8285_900_RX"
             }
         }
     },
