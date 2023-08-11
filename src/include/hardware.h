@@ -18,6 +18,7 @@ typedef enum {
     HARDWARE_radio_nss,
     HARDWARE_radio_nss_2,
     HARDWARE_radio_rst,
+    HARDWARE_radio_rst_2,
     HARDWARE_radio_sck,
     HARDWARE_radio_dcdc,
     HARDWARE_radio_rfo_hf,
@@ -28,7 +29,7 @@ typedef enum {
 
     // Radio power
     HARDWARE_power_enable,
-    HARDWARE_power_apc1, // stm32
+    HARDWARE_power_apc1,
     HARDWARE_power_apc2,
     HARDWARE_power_rxen,
     HARDWARE_power_txen,
@@ -123,6 +124,7 @@ typedef enum {
     HARDWARE_vbat,
     HARDWARE_vbat_offset,
     HARDWARE_vbat_scale,
+    HARDWARE_vbat_atten,
 
     // VTX
     HARDWARE_vtx_amp_pwm,

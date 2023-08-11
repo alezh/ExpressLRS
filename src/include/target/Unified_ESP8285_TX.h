@@ -20,13 +20,14 @@
 #define GPIO_PIN_NSS hardware_pin(HARDWARE_radio_nss)
 #define GPIO_PIN_NSS_2 hardware_pin(HARDWARE_radio_nss_2)
 #define GPIO_PIN_RST hardware_pin(HARDWARE_radio_rst)
+#define GPIO_PIN_RST_2 hardware_pin(HARDWARE_radio_rst_2)
 #define GPIO_PIN_SCK hardware_pin(HARDWARE_radio_sck)
 #define USE_SX1280_DCDC
 #define OPT_USE_SX1280_DCDC hardware_flag(HARDWARE_radio_dcdc)
 
 // Radio power
 #define GPIO_PIN_PA_ENABLE hardware_pin(HARDWARE_power_enable)
-// #define GPIO_PIN_RFamp_APC1 hardware_pin(HARDWARE_power_apc1) // stm32
+#define GPIO_PIN_RFamp_APC1 hardware_pin(HARDWARE_power_apc1)
 #define GPIO_PIN_RFamp_APC2 hardware_pin(HARDWARE_power_apc2)
 #define GPIO_PIN_RX_ENABLE hardware_pin(HARDWARE_power_rxen)
 #define GPIO_PIN_TX_ENABLE hardware_pin(HARDWARE_power_txen)

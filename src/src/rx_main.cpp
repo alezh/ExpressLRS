@@ -99,10 +99,6 @@ Telemetry telemetry;
 Stream *SerialLogger;
 bool hardwareConfigured = true;
 
-#if defined(DEBUG_RCVR_SIGNAL_STATS)
-unsigned long lastReport = 0;
-#endif
-
 #if defined(USE_MSP_WIFI)
 #include "crsf2msp.h"
 #include "msp2crsf.h"
@@ -148,6 +144,7 @@ static uint8_t telemetryBurstMax;
 StubbornReceiver MspReceiver;
 uint8_t MspData[ELRS_MSP_BUFFER];
 
+static bool tlmSent = false;
 static uint8_t NextTelemetryType = ELRS_TELEMETRY_TYPE_LINK;
 static bool telemBurstValid;
 /// PFD Filters ////////////////
@@ -433,7 +430,7 @@ bool ICACHE_RAM_ATTR HandleSendTelemetryResponse()
 {
     uint8_t modresult = (OtaNonce + 1) % ExpressLRS_currTlmDenom;
 
-    if (config.GetForceTlmOff() || (connectionState == disconnected) || (ExpressLRS_currTlmDenom == 1) || (alreadyTLMresp == true) || (modresult != 0))
+    if ((connectionState == disconnected) || (ExpressLRS_currTlmDenom == 1) || (alreadyTLMresp == true) || (modresult != 0))
     {
         return false; // don't bother sending tlm if disconnected or TLM is off
     }
@@ -511,12 +508,15 @@ bool ICACHE_RAM_ATTR HandleSendTelemetryResponse()
 
 #if defined(Regulatory_Domain_EU_CE_2400)
     transmittingRadio &= ChannelIsClear(transmittingRadio);   // weed out the radio(s) if channel in use
-
-    if (transmittingRadio != SX12XX_Radio_NONE)               // send packet if channel available
 #endif
+
+    if (config.GetForceTlmOff())
     {
-        Radio.TXnb((uint8_t*)&otaPkt, ExpressLRS_currAirRate_Modparams->PayloadLength, transmittingRadio);
+        transmittingRadio = SX12XX_Radio_NONE;
     }
+
+    Radio.TXnb((uint8_t*)&otaPkt, ExpressLRS_currAirRate_Modparams->PayloadLength, transmittingRadio);
+
     return true;
 }
 
@@ -727,6 +727,11 @@ static void ICACHE_RAM_ATTR updateDiversity()
 
 void ICACHE_RAM_ATTR HWtimerCallbackTock()
 {
+    if (tlmSent && Radio.GetLastTransmitRadio() == SX12XX_Radio_NONE)
+    {
+        Radio.TXdoneCallback();
+    }
+
     PFDloop.intEvent(micros()); // our internal osc just fired
 
     if (ExpressLRS_currAirRate_Modparams->numOfSends > 1 && !(OtaNonce % ExpressLRS_currAirRate_Modparams->numOfSends) && LQCalcDVDA.currentIsSet())
@@ -743,7 +748,7 @@ void ICACHE_RAM_ATTR HWtimerCallbackTock()
 
     Radio.isFirstRxIrq = true;
     updateDiversity();
-    bool tlmSent = HandleSendTelemetryResponse();
+    tlmSent = HandleSendTelemetryResponse();
 
     #if defined(DEBUG_RX_SCOREBOARD)
     static bool lastPacketWasTelemetry = false;
@@ -835,12 +840,6 @@ static void ICACHE_RAM_ATTR ProcessRfPacket_RC(OTA_Packet_s const * const otaPkt
     // during sync, where packets can be received before connection
     if (connectionState != connected || SwitchModePending)
         return;
-
-    if (firmwareOptions.is_airport)
-    {
-        OtaUnpackAirportData(otaPktPtr, &apOutputBuffer);
-        return;
-    }
 
     bool telemetryConfirmValue = OtaUnpackChannelData(otaPktPtr, ChannelData, ExpressLRS_currTlmDenom);
     TelemetrySender.ConfirmCurrentPayload(telemetryConfirmValue);
@@ -1009,12 +1008,6 @@ bool ICACHE_RAM_ATTR ProcessRFPacket(SX12xxDriverCommon::rx_status const status)
         return false;
     }
 
-    // don't use telemetry packets for PFD calculation since TX does not send such data and tlm frames from other rx are not in sync
-    if (otaPktPtr->std.type == PACKET_TYPE_TLM)
-    {
-        return true;
-    }
-
     PFDloop.extEvent(beginProcessing + PACKET_TO_TOCK_SLACK);
 
     bool doStartTimer = false;
@@ -1034,6 +1027,12 @@ bool ICACHE_RAM_ATTR ProcessRFPacket(SX12xxDriverCommon::rx_status const status)
         doStartTimer = ProcessRfPacket_SYNC(now,
             OtaIsFullRes ? &otaPktPtr->full.sync.sync : &otaPktPtr->std.sync)
             && !InBindingMode;
+        break;
+    case PACKET_TYPE_TLM:
+        if (firmwareOptions.is_airport)
+        {
+            OtaUnpackAirportData(otaPktPtr, &apOutputBuffer);
+        }
         break;
     default:
         break;
@@ -1136,6 +1135,17 @@ void MspReceiveComplete()
                 UpdateModelMatch(MspData[9]);
                 break;
             }
+            else if (OPT_HAS_VTX_SPI && MspData[7] == MSP_SET_VTX_CONFIG)
+            {
+                vtxSPIFrequency = getFreqByIdx(MspData[8]);
+                if (MspData[6] >= 4) // If packet has 4 bytes it also contains power idx and pitmode.
+                {
+                    vtxSPIPowerIdx = MspData[10];
+                    vtxSPIPitmode = MspData[11];
+                }
+                devicesTriggerEvent();
+                break;
+            }
             // FALLTHROUGH
         default:
             if ((receivedHeader->dest_addr == CRSF_ADDRESS_BROADCAST || receivedHeader->dest_addr == CRSF_ADDRESS_CRSF_RECEIVER))
@@ -1176,7 +1186,7 @@ static void setupSerial()
         return;
     }
 
-    if (config.GetSerialProtocol() == PROTOCOL_SBUS || config.GetSerialProtocol() == PROTOCOL_INVERTED_SBUS)
+    if (config.GetSerialProtocol() == PROTOCOL_SBUS || config.GetSerialProtocol() == PROTOCOL_INVERTED_SBUS || config.GetSerialProtocol() == PROTOCOL_DJI_RS_PRO)
     {
         sbusSerialOutput = true;
         serialBaud = 100000;
@@ -1186,7 +1196,7 @@ static void setupSerial()
         sumdSerialOutput = true;
         serialBaud = 115200;
     }
-    bool invert = config.GetSerialProtocol() == PROTOCOL_SBUS || config.GetSerialProtocol() == PROTOCOL_INVERTED_CRSF;
+    bool invert = config.GetSerialProtocol() == PROTOCOL_SBUS || config.GetSerialProtocol() == PROTOCOL_INVERTED_CRSF || config.GetSerialProtocol() == PROTOCOL_DJI_RS_PRO;
 
 #ifdef PLATFORM_STM32
 #if defined(TARGET_R9SLIMPLUS_RX)
@@ -1245,7 +1255,7 @@ static void setupSerial()
     Serial.begin(serialBaud, config, mode, -1, invert);
 #elif defined(PLATFORM_ESP32)
     uint32_t config = sbusSerialOutput ? SERIAL_8E2 : SERIAL_8N1;
-    Serial.begin(serialBaud, config, -1, -1, invert);
+    Serial.begin(serialBaud, config, GPIO_PIN_RCSIGNAL_RX, GPIO_PIN_RCSIGNAL_TX, invert);
 #endif
 
     if (firmwareOptions.is_airport)
@@ -1443,7 +1453,7 @@ static void updateBindingMode(unsigned long now)
     // and we're not already in binding mode, enter binding
     if (!config.GetIsBound() && !InBindingMode)
     {
-        INFOLN("RX has not been bound, enter binding mode...");
+        DBGLN("RX has not been bound, enter binding mode...");
         EnterBindingMode();
     }
 #endif
@@ -1482,7 +1492,7 @@ static void updateBindingMode(unsigned long now)
         config.SetPowerOnCounter(0);
         config.Commit();
 
-        INFOLN("Power on counter >=3, enter binding mode...");
+        DBGLN("Power on counter >=3, enter binding mode...");
         config.SetIsBound(false);
         EnterBindingMode();
     }
@@ -1517,7 +1527,7 @@ static void debugRcvrLinkstats()
 
         // Copy the data out of the ISR-updating bits ASAP
         // While YOLOing (const void *) away the volatile
-        crsfLinkStatistics_t ls = *(crsfLinkStatistics_t *)((const void *)&crsf.LinkStatistics);
+        crsfLinkStatistics_t ls = *(crsfLinkStatistics_t *)((const void *)&CRSF::LinkStatistics);
         uint32_t packetCounter = debugRcvrLinkstatsPacketId;
         uint8_t fhss = debugRcvrLinkstatsFhssIdx;
         // actually the previous packet's offset since the update happens in tick, and this will
@@ -1532,6 +1542,47 @@ static void debugRcvrLinkstats()
             ls.uplink_Link_quality, ls.uplink_SNR,
             ls.uplink_TX_Power, fhss, pfd);
         Serial.write(buf);
+    }
+#endif
+}
+
+static void debugRcvrSignalStats(uint32_t now)
+{
+#if defined(DEBUG_RCVR_SIGNAL_STATS)
+    static uint32_t lastReport = 0;
+
+    // log column header:  cnt1, rssi1, snr1, snr1_max, telem1, fail1, cnt2, rssi2, snr2, snr2_max, telem2, fail2, or, both
+    if(now - lastReport >= 1000 && connectionState == connected)
+    {
+        for (int i = 0 ; i < (isDualRadio()?2:1) ; i++)
+        {
+            DBG("%d\t%f\t%f\t%f\t%d\t%d\t",
+                Radio.rxSignalStats[i].irq_count,
+                (Radio.rxSignalStats[i].irq_count==0) ? 0 : double(Radio.rxSignalStats[i].rssi_sum)/Radio.rxSignalStats[i].irq_count,
+                (Radio.rxSignalStats[i].irq_count==0) ? 0 : double(Radio.rxSignalStats[i].snr_sum)/Radio.rxSignalStats[i].irq_count/RADIO_SNR_SCALE,
+                float(Radio.rxSignalStats[i].snr_max)/RADIO_SNR_SCALE,
+                Radio.rxSignalStats[i].telem_count,
+                Radio.rxSignalStats[i].fail_count);
+
+                Radio.rxSignalStats[i].irq_count = 0;
+                Radio.rxSignalStats[i].snr_sum = 0;
+                Radio.rxSignalStats[i].rssi_sum = 0;
+                Radio.rxSignalStats[i].snr_max = INT8_MIN;
+                Radio.rxSignalStats[i].telem_count = 0;
+                Radio.rxSignalStats[i].fail_count = 0;
+        }
+        if (isDualRadio())
+        {
+            DBGLN("%d\t%d", Radio.irq_count_or, Radio.irq_count_both);
+        }
+        else
+        {
+            DBGLN("");
+        }
+        Radio.irq_count_or = 0;
+        Radio.irq_count_both = 0;
+
+        lastReport = now;
     }
 #endif
 }
@@ -1611,6 +1662,8 @@ void setup()
 
         connectionState = hardwareUndefined;
     }
+    #else
+    hardwareConfigured = options_init();
     #endif
 
     if (hardwareConfigured)
@@ -1649,7 +1702,7 @@ void setup()
         #endif
         setupSerial();
 
-        INFOLN("ExpressLRS Module Booting...");
+        DBGLN("ExpressLRS Module Booting...");
 
         devicesRegister(ui_devices, ARRAY_SIZE(ui_devices));
         devicesInit();
@@ -1757,42 +1810,7 @@ void loop()
     updateSwitchMode();
     checkGeminiMode();
     debugRcvrLinkstats();
-
-#if defined DEBUG_RCVR_SIGNAL_STATS
-    // log column header:  cnt1, rssi1, snr1, snr1_max, telem1, fail1, cnt2, rssi2, snr2, snr2_max, telem2, fail2, or, both
-    if(now - lastReport >= 1000 && connectionState == connected)
-    {
-        for (int i = 0 ; i < (isDualRadio()?2:1) ; i++)
-        {
-            DBG("%d\t%f\t%f\t%f\t%d\t%d\t",
-                Radio.rxSignalStats[i].irq_count,
-                (Radio.rxSignalStats[i].irq_count==0) ? 0 : double(Radio.rxSignalStats[i].rssi_sum)/Radio.rxSignalStats[i].irq_count,
-                (Radio.rxSignalStats[i].irq_count==0) ? 0 : double(Radio.rxSignalStats[i].snr_sum)/Radio.rxSignalStats[i].irq_count/RADIO_SNR_SCALE,
-                float(Radio.rxSignalStats[i].snr_max)/RADIO_SNR_SCALE,
-                Radio.rxSignalStats[i].telem_count,
-                Radio.rxSignalStats[i].fail_count);
-
-                Radio.rxSignalStats[i].irq_count = 0;
-                Radio.rxSignalStats[i].snr_sum = 0;
-                Radio.rxSignalStats[i].rssi_sum = 0;
-                Radio.rxSignalStats[i].snr_max = INT8_MIN;
-                Radio.rxSignalStats[i].telem_count = 0;
-                Radio.rxSignalStats[i].fail_count = 0;
-        }
-        if (isDualRadio())
-        {
-            DBGLN("%d\t%d", Radio.irq_count_or, Radio.irq_count_both);
-        }
-        else
-        {
-            DBGLN("");
-        }
-        Radio.irq_count_or = 0;
-        Radio.irq_count_both = 0;
-
-        lastReport = now;
-    }
-#endif
+    debugRcvrSignalStats(now);
 }
 
 struct bootloader {

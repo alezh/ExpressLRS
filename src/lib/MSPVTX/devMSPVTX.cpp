@@ -17,6 +17,7 @@
 #define FC_QUERY_PERIOD_MS      200 // poll every 200ms
 #define MSP_VTX_FUNCTION_OFFSET 7
 #define MSP_VTX_PAYLOAD_OFFSET  11
+#define MSP_VTX_TIMEOUT_NO_CONNECTION 5000
 
 typedef enum
 {
@@ -26,6 +27,7 @@ typedef enum
   SET_RCE_PIT_MODE,
   SEND_EEPROM_WRITE,
   MONITORING,
+  STOP_MSPVTX,
   MSP_STATE_MAX
 } mspVtxState_e;
 
@@ -73,7 +75,7 @@ static void clearVtxTable(void)
         0, // idx MSB
         3, // 25mW Power idx
         0, // pitmode
-        0, // lowPowerDisarm 
+        0, // lowPowerDisarm
         0, // pitModeFreq LSB
         0, // pitModeFreq MSB
         4, // newBand - Band Fatshark
@@ -155,7 +157,7 @@ static void setVtxTablePowerLevel(uint8_t idx)
     payload[0] = idx;
     payload[1] = powerLevelsLut[idx - 1] & 0xFF;         // powerValue LSB
     payload[2] = (powerLevelsLut[idx - 1] >> 8) & 0xFF; // powerValue MSB
-    payload[3] = POWER_LEVEL_LABEL_LENGTH; 
+    payload[3] = POWER_LEVEL_LABEL_LENGTH;
     payload[4] = powerLevelsLabel[((idx - 1) * POWER_LEVEL_LABEL_LENGTH) + 0];
     payload[5] = powerLevelsLabel[((idx - 1) * POWER_LEVEL_LABEL_LENGTH) + 1];
     payload[6] = powerLevelsLabel[((idx - 1) * POWER_LEVEL_LABEL_LENGTH) + 2];
@@ -214,7 +216,7 @@ void mspVtxProcessPacket(uint8_t *packet)
 
             if (vtxConfigPacket->lowPowerDisarm) // Force 0mw on boot because BF doesnt send a low power index.
             {
-                power = 1; 
+                power = 1;
             }
 
             if (power >= NUM_POWER_LEVELS)
@@ -222,7 +224,7 @@ void mspVtxProcessPacket(uint8_t *packet)
                 power = 3; // 25 mW
             }
 
-            channel = ((vtxConfigPacket->band - 1) * 8) + (vtxConfigPacket->channel - 1);   
+            channel = ((vtxConfigPacket->band - 1) * 8) + (vtxConfigPacket->channel - 1);
             if (channel >= FREQ_TABLE_SIZE)
             {
                 channel = 27; // F4 5800MHz
@@ -347,16 +349,25 @@ static void mspVtxStateUpdate(void)
 
 void disableMspVtx(void)
 {
-    mspState = MSP_STATE_MAX;
+    mspState = STOP_MSPVTX;
 }
 
 static int event(void)
 {
+    if (GPIO_PIN_SPI_VTX_NSS == UNDEF_PIN)
+    {
+        return DURATION_NEVER;
+    }
     return DURATION_IMMEDIATELY;
 }
 
 static int timeout(void)
 {
+    if (mspState == STOP_MSPVTX || (mspState != MONITORING && millis() > MSP_VTX_TIMEOUT_NO_CONNECTION))
+    {
+        return DURATION_NEVER;
+    }
+
     if (hwTimer::running && !hwTimer::isTick)
     {
         // Only run code during rx free time or when disconnected.
