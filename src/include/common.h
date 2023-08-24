@@ -7,6 +7,8 @@
 #include "SX127xDriver.h"
 #elif defined(RADIO_SX128X)
 #include "SX1280Driver.h"
+#elif defined(RADIO_SX126X)
+#include "SX126xDriver.h"
 #else
 #error "Radio configuration is not valid!"
 #endif
@@ -103,6 +105,7 @@ enum {
     RADIO_TYPE_SX127x_LORA,
     RADIO_TYPE_SX128x_LORA,
     RADIO_TYPE_SX128x_FLRC,
+    RADIO_TYPE_SX126x_LORA,
 };
 
 typedef enum : uint8_t
@@ -208,6 +211,14 @@ extern SX127xDriver Radio;
 #define RATE_BINDING RATE_LORA_50HZ
 
 extern SX1280Driver Radio;
+
+#elif defined(RADIO_SX126X)
+#define RATE_MAX 8
+#define RATE_DEFAULT 0
+#define RATE_BINDING 3 // 50Hz bind mode
+
+extern SX126xDriver Radio;
+
 #endif
 
 

@@ -119,6 +119,16 @@
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_900_TX"
+            },
+            "new900": {
+                "product_name": "Alz SX126X 900MHz TX",
+                "lua_name": "Alz SX126X 900TX1W",
+                "layout_file": "Alz 900.json",
+                "features": ["fan"],
+                "upload_methods": ["uart", "wifi"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_900_TX_SX126X",
+                "prior_target_name": "ALZ_900_TX_SX126X_1000MW"
             }
         },
         "rx_900": {
@@ -137,6 +147,15 @@
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp8285",
                 "firmware": "Unified_ESP8285_900_RX"
+            },
+            "micro": {
+                "product_name": "Alz SX126X 900MHz RX",
+                "lua_name": "Alz SX126X 900RX",
+                "layout_file": "Alz 900.json",
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp8285",
+                "firmware": "Unified_ESP8285_900_RX_SX126X",
+                "prior_target_name": "ALZ_900_RX_SX126X"
             }
         }
     },
