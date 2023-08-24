@@ -29,7 +29,7 @@ const fhss_config_t domains[] = {
 
 #elif defined(RADIO_SX126X)
 #include "SX126xDriver.h"
-
+//{"FCC915", FREQ_HZ_TO_REG_VAL(902400000), FREQ_HZ_TO_REG_VAL(927600000), 42},
 const fhss_config_t domains[] = {
     {"AU915",  FREQ_HZ_TO_REG_VAL(915500000), FREQ_HZ_TO_REG_VAL(926900000), 20},
     {"FCC915", FREQ_HZ_TO_REG_VAL(903500000), FREQ_HZ_TO_REG_VAL(926900000), 40},
