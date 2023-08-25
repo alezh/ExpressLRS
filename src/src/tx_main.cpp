@@ -365,7 +365,12 @@ void ICACHE_RAM_ATTR SetRFLinkRate(uint8_t index) // Set speed of RF link (hz)
 
   if (isDualRadio() && config.GetAntennaMode() == TX_RADIO_MODE_GEMINI) // Gemini mode
   {
-    Radio.SetFrequencyReg(FHSSgetInitialGeminiFreq(), SX12XX_Radio_2);
+    Radio.SetFrequencyReg(FHSSgetInitialGeminiFreq()
+#if defined(RADIO_SX126X)
+                          );
+#else
+                              , SX12XX_Radio_2);
+#endif
   }
 
   OtaUpdateSerializers(newSwitchMode, ModParams->PayloadLength);

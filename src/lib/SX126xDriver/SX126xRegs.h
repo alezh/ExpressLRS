@@ -351,12 +351,12 @@
 #define SX126x_XTAL_FREQ 32000000
 #define FREQ_STEP ((double)(SX126x_XTAL_FREQ / pow(2.0, 18.0)))  // 198.3642578125
 
-typedef enum
-{
-    SX126x_Radio_1 = 1 << 0,
-    SX126x_Radio_2 = 1 << 1,
-    SX126x_Radio_All = 0xFF,
-} SX126x_Radio_Number_t;
+//typedef enum
+//{
+//    SX126x_Radio_1 = 1 << 0,
+//    SX126x_Radio_2 = 1 << 1,
+//    SX126x_Radio_All = 0xFF,
+//} SX12XX_Radio_Number_t;
 
 typedef enum
 {

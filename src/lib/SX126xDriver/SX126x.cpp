@@ -77,7 +77,7 @@ bool SX126xDriver::Begin()
 
     SetMode(SX126x_MODE_STDBY_RC, SX126x_Radio_All); // Put in STDBY_RC mode.  Must be SX126x_MODE_STDBY_RC for SX126x_RADIO_SET_REGULATORMODE to be set.
 
-    uint16_t firmwareRev = (((hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB, SX126x_Radio_1)) << 8) | (hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB + 1, SX126x_Radio_1)));
+    uint16_t firmwareRev = (((hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB, SX12XX_Radio_1)) << 8) | (hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB + 1, SX12XX_Radio_1)));
     DBGLN("Read Vers sx126x #1: %d", firmwareRev);
     if ((firmwareRev == 0) || (firmwareRev == 65535))
     {
@@ -87,7 +87,7 @@ bool SX126xDriver::Begin()
 
     if (GPIO_PIN_NSS_2 != UNDEF_PIN)
     {
-        firmwareRev = (((hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB, SX126x_Radio_2)) << 8) | (hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB + 1, SX126x_Radio_2)));
+        firmwareRev = (((hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB, SX12XX_Radio_2)) << 8) | (hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB + 1, SX12XX_Radio_2)));
         DBGLN("Read Vers sx126x #2: %d", firmwareRev);
         if ((firmwareRev == 0) || (firmwareRev == 65535))
         {
@@ -95,10 +95,10 @@ bool SX126xDriver::Begin()
             return false;
         }
 
-        hal.WriteRegister(0x0891, (hal.ReadRegister(0x0891, SX126x_Radio_2) | 0xC0), SX126x_Radio_2);   //default is low power mode, switch to high sensitivity instead
+        hal.WriteRegister(0x0891, (hal.ReadRegister(0x0891, SX12XX_Radio_2) | 0xC0), SX12XX_Radio_2);   //default is low power mode, switch to high sensitivity instead
     }
 
-    hal.WriteRegister(0x0891, (hal.ReadRegister(0x0891, SX126x_Radio_1) | 0xC0), SX126x_Radio_1);   //default is low power mode, switch to high sensitivity instead
+    hal.WriteRegister(0x0891, (hal.ReadRegister(0x0891, SX12XX_Radio_1) | 0xC0), SX12XX_Radio_1);   //default is low power mode, switch to high sensitivity instead
 //PTK TODO:    hal.WriteCommand(SX126x_RADIO_SET_AUTOFS, 0x01, SX126x_Radio_All);                              //Enable auto FS
 #if defined(USE_SX126x_DCDC)
     if (OPT_USE_SX126x_DCDC)
@@ -160,7 +160,7 @@ void SX126xDriver::SetOutputPower(int8_t power)
     return;
 }
 
-void SX126xDriver::SetMode(SX126x_RadioOperatingModes_t OPmode, SX126x_Radio_Number_t radioNumber)
+void SX126xDriver::SetMode(SX126x_RadioOperatingModes_t OPmode, SX12XX_Radio_Number_t radioNumber)
 {
     /*
     Comment out since it is difficult to keep track of dual radios.
@@ -270,14 +270,14 @@ void SX126xDriver::SetPacketParamsLoRa(uint8_t PreambleLength, SX126x_RadioLoRaP
     modeSupportsFei = HeaderType == SX126x_LORA_PACKET_VARIABLE_LENGTH;
 }
 
-void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyHz(uint32_t freq)
+void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyHz(uint32_t freq, SX12XX_Radio_Number_t radioNumber)
 {
     uint32_t regfreq = (uint32_t)((double)freq / (double)FREQ_STEP);
 
-    SetFrequencyReg(regfreq);
+    SetFrequencyReg(regfreq, radioNumber);
 }
 
-void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyReg(uint32_t regfreq)
+void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyReg(uint32_t regfreq, SX12XX_Radio_Number_t radioNumber)
 {
     WORD_ALIGNED_ATTR uint8_t buf[3] = {0};
 
@@ -285,7 +285,7 @@ void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyReg(uint32_t regfreq)
     buf[1] = (uint8_t)((regfreq >> 8) & 0xFF);
     buf[2] = (uint8_t)(regfreq & 0xFF);
 
-    hal.WriteCommand(SX126x_RADIO_SET_RFFREQUENCY, buf, sizeof(buf), SX126x_Radio_All);
+    hal.WriteCommand(SX126x_RADIO_SET_RFFREQUENCY, buf, sizeof(buf), radioNumber);
 
     currFreq = regfreq;
 }
@@ -315,7 +315,7 @@ void SX126xDriver::SetDioIrqParams(uint16_t irqMask, uint16_t dio1Mask, uint16_t
     hal.WriteCommand(SX126x_RADIO_SET_DIOIRQPARAMS, buf, sizeof(buf), SX126x_Radio_All);
 }
 
-uint16_t ICACHE_RAM_ATTR SX126xDriver::GetIrqStatus(SX126x_Radio_Number_t radioNumber)
+uint16_t ICACHE_RAM_ATTR SX126xDriver::GetIrqStatus(SX12XX_Radio_Number_t radioNumber)
 {
     uint8_t status[2];
 
@@ -323,7 +323,7 @@ uint16_t ICACHE_RAM_ATTR SX126xDriver::GetIrqStatus(SX126x_Radio_Number_t radioN
     return status[0] << 8 | status[1];
 }
 
-void ICACHE_RAM_ATTR SX126xDriver::ClearIrqStatus(uint16_t irqMask, SX126x_Radio_Number_t radioNumber)
+void ICACHE_RAM_ATTR SX126xDriver::ClearIrqStatus(uint16_t irqMask, SX12XX_Radio_Number_t radioNumber)
 {
     uint8_t buf[2];
 
@@ -356,13 +356,13 @@ void ICACHE_RAM_ATTR SX126xDriver::TXnb(uint8_t * data, uint8_t size)
     if (GPIO_PIN_NSS_2 != UNDEF_PIN)
     {
         // Make sure the unused radio is in FS mode and will not receive the tx packet.
-        if (lastSuccessfulPacketRadio == SX126x_Radio_1)
+        if (lastSuccessfulPacketRadio == SX12XX_Radio_1)
         {
-            instance->SetMode(SX126x_MODE_FS, SX126x_Radio_2);
+            instance->SetMode(SX126x_MODE_FS, SX12XX_Radio_2);
         }
         else
         {
-            instance->SetMode(SX126x_MODE_FS, SX126x_Radio_1);
+            instance->SetMode(SX126x_MODE_FS, SX12XX_Radio_1);
         }
     }
 
@@ -375,7 +375,7 @@ void ICACHE_RAM_ATTR SX126xDriver::TXnb(uint8_t * data, uint8_t size)
 #endif
 }
 
-bool ICACHE_RAM_ATTR SX126xDriver::RXnbISR(uint16_t irqStatus, SX126x_Radio_Number_t radioNumber)
+bool ICACHE_RAM_ATTR SX126xDriver::RXnbISR(uint16_t irqStatus, SX12XX_Radio_Number_t radioNumber)
 {
     // In continuous receive mode, the device stays in Rx mode
     if (timeout != 0xFFFF)
@@ -411,14 +411,14 @@ void ICACHE_RAM_ATTR SX126xDriver::RXnb()
     SetMode(SX126x_MODE_RX, SX126x_Radio_All);
 }
 
-uint8_t ICACHE_RAM_ATTR SX126xDriver::GetRxBufferAddr(SX126x_Radio_Number_t radioNumber)
+uint8_t ICACHE_RAM_ATTR SX126xDriver::GetRxBufferAddr(SX12XX_Radio_Number_t radioNumber)
 {
     WORD_ALIGNED_ATTR uint8_t status[2] = {0};
     hal.ReadCommand(SX126x_RADIO_GET_RXBUFFERSTATUS, status, 2, radioNumber);
     return status[1];
 }
 
-void ICACHE_RAM_ATTR SX126xDriver::GetStatus(SX126x_Radio_Number_t radioNumber)
+void ICACHE_RAM_ATTR SX126xDriver::GetStatus(SX12XX_Radio_Number_t radioNumber)
 {
     uint8_t status = 0;
     hal.ReadCommand(SX126x_RADIO_GET_STATUS, (uint8_t *)&status, 1, radioNumber);
@@ -459,18 +459,18 @@ void ICACHE_RAM_ATTR SX126xDriver::GetLastPacketStats()
 
 void ICACHE_RAM_ATTR SX126xDriver::IsrCallback_1()
 {
-    instance->IsrCallback(SX126x_Radio_1);
+    instance->IsrCallback(SX12XX_Radio_1);
 }
 
 void ICACHE_RAM_ATTR SX126xDriver::IsrCallback_2()
 {
-    instance->IsrCallback(SX126x_Radio_2);
+    instance->IsrCallback(SX12XX_Radio_2);
 }
 
-void ICACHE_RAM_ATTR SX126xDriver::IsrCallback(SX126x_Radio_Number_t radioNumber)
+void ICACHE_RAM_ATTR SX126xDriver::IsrCallback(SX12XX_Radio_Number_t radioNumber)
 {
     instance->processingPacketRadio = radioNumber;
-    SX126x_Radio_Number_t irqClearRadio = radioNumber;
+    SX12XX_Radio_Number_t irqClearRadio = radioNumber;
 
     uint16_t irqStatus = instance->GetIrqStatus(radioNumber);
     if (irqStatus & SX126x_IRQ_TX_DONE)
