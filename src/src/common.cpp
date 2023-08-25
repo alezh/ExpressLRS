@@ -76,7 +76,7 @@ expresslrs_rf_pref_params_s ExpressLRS_AirRateRFperf[RATE_MAX] = {
     {4, RATE_LORA_100HZ_8CH, -112,  5871, 3500, 2500, 10, 5000, SNR_SCALE( 0), SNR_SCALE(8.5)},
     {5, RATE_LORA_50HZ,      -120,  17540, 3500, 2500, 10, 5000, SNR_SCALE( 0), SNR_SCALE(8.5)},
     {6, RATE_LORA_25HZ,      -123,  17540, 3500, 2500, 10, 5000, SNR_SCALE( 0), SNR_SCALE(8.5)},
-    {7, RATE_LORA_4HZ,       -126,  239620, 30000, 2500, 10, 5000, SNR_SCALE( 0), SNR_SCALE(8.5)}};
+    {7, RATE_LORA_4HZ,       -126,  23962, 4000, 2500, 10, 5000, SNR_SCALE( 0), SNR_SCALE(8.5)}};
     
 #endif
 
