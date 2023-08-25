@@ -343,7 +343,7 @@ void ICACHE_RAM_ATTR SX126xDriver::TXnbISR()
     TXdoneCallback();
 }
 
-void ICACHE_RAM_ATTR SX126xDriver::TXnb(uint8_t * data, uint8_t size, SX12XX_Radio_Number_t `radioNumber`)
+void ICACHE_RAM_ATTR SX126xDriver::TXnb(uint8_t * data, uint8_t size, SX12XX_Radio_Number_t radioNumber)
 {
     if (currOpmode == SX126x_MODE_TX) //catch TX timeout
     {
