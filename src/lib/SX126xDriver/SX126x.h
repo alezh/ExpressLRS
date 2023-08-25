@@ -34,8 +34,8 @@ public:
     bool GetFrequencyErrorbool();
     bool FrequencyErrorAvailable() const { return modeSupportsFei && (LastPacketSNRRaw > 0); }
 
-    void TXnb(uint8_t * data, uint8_t size);
-    void RXnb();
+    void TXnb(uint8_t * data, uint8_t size, SX12XX_Radio_Number_t radioNumber);
+    void RXnb(SX126x_RadioOperatingModes_t rxMode = SX126x_MODE_RX);
 
     uint16_t GetIrqStatus(SX12XX_Radio_Number_t radioNumber);
     void ClearIrqStatus(uint16_t irqMask, SX12XX_Radio_Number_t radioNumber);
@@ -43,7 +43,7 @@ public:
     void GetStatus(SX12XX_Radio_Number_t radioNumber);
 
     uint8_t GetRxBufferAddr(SX12XX_Radio_Number_t radioNumber);
-    int8_t GetRssiInst();
+    int8_t GetRssiInst(SX12XX_Radio_Number_t radioNumber);
     void GetLastPacketStats();
 
 private:

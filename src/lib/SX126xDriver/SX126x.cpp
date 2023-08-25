@@ -343,7 +343,7 @@ void ICACHE_RAM_ATTR SX126xDriver::TXnbISR()
     TXdoneCallback();
 }
 
-void ICACHE_RAM_ATTR SX126xDriver::TXnb(uint8_t * data, uint8_t size)
+void ICACHE_RAM_ATTR SX126xDriver::TXnb(uint8_t * data, uint8_t size, SX12XX_Radio_Number_t `radioNumber`)
 {
     if (currOpmode == SX126x_MODE_TX) //catch TX timeout
     {
@@ -405,10 +405,10 @@ bool ICACHE_RAM_ATTR SX126xDriver::RXnbISR(uint16_t irqStatus, SX12XX_Radio_Numb
     return RXdoneCallback(fail);
 }
 
-void ICACHE_RAM_ATTR SX126xDriver::RXnb()
+void ICACHE_RAM_ATTR SX126xDriver::RXnb(SX126x_RadioOperatingModes_t rxMode)
 {
     hal.RXenable();
-    SetMode(SX126x_MODE_RX, SX126x_Radio_All);
+    SetMode(rxMode, SX126x_Radio_All);
 }
 
 uint8_t ICACHE_RAM_ATTR SX126xDriver::GetRxBufferAddr(SX12XX_Radio_Number_t radioNumber)
@@ -436,11 +436,11 @@ bool ICACHE_RAM_ATTR SX126xDriver::GetFrequencyErrorbool()
         return !IQinverted;
 }
 
-int8_t ICACHE_RAM_ATTR SX126xDriver::GetRssiInst()
+int8_t ICACHE_RAM_ATTR SX126xDriver::GetRssiInst(SX12XX_Radio_Number_t radioNumber)
 {
     uint8_t status = 0;
 
-    hal.ReadCommand(SX126x_RADIO_GET_RSSIINST, (uint8_t *)&status, 1, lastSuccessfulPacketRadio);
+    hal.ReadCommand(SX126x_RADIO_GET_RSSIINST, (uint8_t *)&status, 1, radioNumber);
     return -(int8_t)(status / 2);
 }
 
