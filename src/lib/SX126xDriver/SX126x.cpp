@@ -59,7 +59,7 @@ SX126xDriver::SX126xDriver(): SX12xxDriverCommon()
 
 void SX126xDriver::End()
 {
-    SetMode(SX126x_MODE_SLEEP, SX126x_Radio_All);
+    SetMode(SX126x_MODE_SLEEP, SX12XX_Radio_All);
     hal.end();
     RemoveCallbacks();
     currFreq = (uint32_t)((double)2400000000 / (double)FREQ_STEP);
@@ -75,7 +75,7 @@ bool SX126xDriver::Begin()
     hal.reset();
     DBGLN("SX126x Begin");
 
-    SetMode(SX126x_MODE_STDBY_RC, SX126x_Radio_All); // Put in STDBY_RC mode.  Must be SX126x_MODE_STDBY_RC for SX126x_RADIO_SET_REGULATORMODE to be set.
+    SetMode(SX126x_MODE_STDBY_RC, SX12XX_Radio_All); // Put in STDBY_RC mode.  Must be SX126x_MODE_STDBY_RC for SX126x_RADIO_SET_REGULATORMODE to be set.
 
     uint16_t firmwareRev = (((hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB, SX12XX_Radio_1)) << 8) | (hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB + 1, SX12XX_Radio_1)));
     DBGLN("Read Vers sx126x #1: %d", firmwareRev);
@@ -99,11 +99,11 @@ bool SX126xDriver::Begin()
     }
 
     hal.WriteRegister(0x0891, (hal.ReadRegister(0x0891, SX12XX_Radio_1) | 0xC0), SX12XX_Radio_1);   //default is low power mode, switch to high sensitivity instead
-//PTK TODO:    hal.WriteCommand(SX126x_RADIO_SET_AUTOFS, 0x01, SX126x_Radio_All);                              //Enable auto FS
+//PTK TODO:    hal.WriteCommand(SX126x_RADIO_SET_AUTOFS, 0x01, SX12XX_Radio_All);                              //Enable auto FS
 #if defined(USE_SX126x_DCDC)
     if (OPT_USE_SX126x_DCDC)
     {
-        hal.WriteCommand(SX126x_RADIO_SET_REGULATORMODE, SX126x_USE_DCDC, SX126x_Radio_All);        // Enable DCDC converter instead of LDO
+        hal.WriteCommand(SX126x_RADIO_SET_REGULATORMODE, SX126x_USE_DCDC, SX12XX_Radio_All);        // Enable DCDC converter instead of LDO
     }
 #endif
 
@@ -118,8 +118,8 @@ void SX126xDriver::Config(uint8_t bw, uint8_t sf, uint8_t cr, uint32_t regfreq,
     PayloadLength = _PayloadLength;
     IQinverted = InvertIQ;
     packet_mode = mode;
-    SetMode(SX126x_MODE_STDBY_RC, SX126x_Radio_All);
-    hal.WriteCommand(SX126x_RADIO_SET_PACKETTYPE, mode, SX126x_Radio_All, 20);
+    SetMode(SX126x_MODE_STDBY_RC, SX12XX_Radio_All);
+    hal.WriteCommand(SX126x_RADIO_SET_PACKETTYPE, mode, SX12XX_Radio_All, 20);
 
     DBG("Config LoRa ");
     ConfigModParamsLoRa(bw, sf, cr);
@@ -155,7 +155,7 @@ void SX126xDriver::SetOutputPower(int8_t power)
     if (power < -18) power = -18;
     else if (13 < power) power = 13;
     uint8_t buf[2] = {(uint8_t)(power + 18), (uint8_t)SX126x_RADIO_RAMP_04_US};
-    hal.WriteCommand(SX126x_RADIO_SET_TXPARAMS, buf, sizeof(buf), SX126x_Radio_All);
+    hal.WriteCommand(SX126x_RADIO_SET_TXPARAMS, buf, sizeof(buf), SX12XX_Radio_All);
     DBGLN("SetPower: %d", buf[0]);
     return;
 }
@@ -227,20 +227,20 @@ void SX126xDriver::ConfigModParamsLoRa(uint8_t bw, uint8_t sf, uint8_t cr)
 
     WORD_ALIGNED_ATTR uint8_t rfparams[3] = {sf, bw, cr};
 
-    hal.WriteCommand(SX126x_RADIO_SET_MODULATIONPARAMS, rfparams, sizeof(rfparams), SX126x_Radio_All, 25);
+    hal.WriteCommand(SX126x_RADIO_SET_MODULATIONPARAMS, rfparams, sizeof(rfparams), SX12XX_Radio_All, 25);
 
     switch (sf)
     {
     case SX126x_LORA_SF5:
     case SX126x_LORA_SF6:
-        hal.WriteRegister(SX126x_REG_SF_ADDITIONAL_CONFIG, 0x1E, SX126x_Radio_All); // for SF5 or SF6
+        hal.WriteRegister(SX126x_REG_SF_ADDITIONAL_CONFIG, 0x1E, SX12XX_Radio_All); // for SF5 or SF6
         break;
     case SX126x_LORA_SF7:
     case SX126x_LORA_SF8:
-        hal.WriteRegister(SX126x_REG_SF_ADDITIONAL_CONFIG, 0x37, SX126x_Radio_All); // for SF7 or SF8
+        hal.WriteRegister(SX126x_REG_SF_ADDITIONAL_CONFIG, 0x37, SX12XX_Radio_All); // for SF7 or SF8
         break;
     default:
-        hal.WriteRegister(SX126x_REG_SF_ADDITIONAL_CONFIG, 0x32, SX126x_Radio_All); // for SF9, SF10, SF11, SF12
+        hal.WriteRegister(SX126x_REG_SF_ADDITIONAL_CONFIG, 0x32, SX12XX_Radio_All); // for SF9, SF10, SF11, SF12
     }
     // Datasheet in LoRa Operation says "After SetModulationParams command:
     // In all cases 0x1 must be written to the Frequency Error Compensation mode register 0x093C"
@@ -248,7 +248,7 @@ void SX126xDriver::ConfigModParamsLoRa(uint8_t bw, uint8_t sf, uint8_t cr)
     // The default register value (0x1b) seems most compatible, so don't mess with it
     // InvertIQ=0 0x00=No reception 0x01=Poor reception w/o Explicit Header 0x02=OK 0x03=OK
     // InvertIQ=1 0x00, 0x01, 0x02, and 0x03=Poor reception w/o Explicit Header
-    // hal.WriteRegister(SX126x_REG_FREQ_ERR_CORRECTION, 0x03, SX126x_Radio_All);
+    // hal.WriteRegister(SX126x_REG_FREQ_ERR_CORRECTION, 0x03, SX12XX_Radio_All);
 }
 
 void SX126xDriver::SetPacketParamsLoRa(uint8_t PreambleLength, SX126x_RadioLoRaPacketLengthsModes_t HeaderType,
@@ -264,7 +264,7 @@ void SX126xDriver::SetPacketParamsLoRa(uint8_t PreambleLength, SX126x_RadioLoRaP
     buf[5] = 0x00;
     buf[6] = 0x00;
 
-    hal.WriteCommand(SX126x_RADIO_SET_PACKETPARAMS, buf, sizeof(buf), SX126x_Radio_All, 20);
+    hal.WriteCommand(SX126x_RADIO_SET_PACKETPARAMS, buf, sizeof(buf), SX12XX_Radio_All, 20);
 
     // FEI only triggers in Lora mode when the header is present :(
     modeSupportsFei = HeaderType == SX126x_LORA_PACKET_VARIABLE_LENGTH;
@@ -296,7 +296,7 @@ void SX126xDriver::SetFIFOaddr(uint8_t txBaseAddr, uint8_t rxBaseAddr)
 
     buf[0] = txBaseAddr;
     buf[1] = rxBaseAddr;
-    hal.WriteCommand(SX126x_RADIO_SET_BUFFERBASEADDRESS, buf, sizeof(buf), SX126x_Radio_All);
+    hal.WriteCommand(SX126x_RADIO_SET_BUFFERBASEADDRESS, buf, sizeof(buf), SX12XX_Radio_All);
 }
 
 void SX126xDriver::SetDioIrqParams(uint16_t irqMask, uint16_t dio1Mask, uint16_t dio2Mask, uint16_t dio3Mask)
@@ -312,7 +312,7 @@ void SX126xDriver::SetDioIrqParams(uint16_t irqMask, uint16_t dio1Mask, uint16_t
     buf[6] = (uint8_t)((dio3Mask >> 8) & 0x00FF);
     buf[7] = (uint8_t)(dio3Mask & 0x00FF);
 
-    hal.WriteCommand(SX126x_RADIO_SET_DIOIRQPARAMS, buf, sizeof(buf), SX126x_Radio_All);
+    hal.WriteCommand(SX126x_RADIO_SET_DIOIRQPARAMS, buf, sizeof(buf), SX12XX_Radio_All);
 }
 
 uint16_t ICACHE_RAM_ATTR SX126xDriver::GetIrqStatus(SX12XX_Radio_Number_t radioNumber)
@@ -348,7 +348,7 @@ void ICACHE_RAM_ATTR SX126xDriver::TXnb(uint8_t * data, uint8_t size, SX12XX_Rad
     if (currOpmode == SX126x_MODE_TX) //catch TX timeout
     {
         //DBGLN("Timeout!");
-        SetMode(SX126x_MODE_FS, SX126x_Radio_All);
+        SetMode(SX126x_MODE_FS, SX12XX_Radio_All);
         TXnbISR();
         return;
     }
@@ -408,7 +408,7 @@ bool ICACHE_RAM_ATTR SX126xDriver::RXnbISR(uint16_t irqStatus, SX12XX_Radio_Numb
 void ICACHE_RAM_ATTR SX126xDriver::RXnb(SX126x_RadioOperatingModes_t rxMode)
 {
     hal.RXenable();
-    SetMode(rxMode, SX126x_Radio_All);
+    SetMode(rxMode, SX12XX_Radio_All);
 }
 
 uint8_t ICACHE_RAM_ATTR SX126xDriver::GetRxBufferAddr(SX12XX_Radio_Number_t radioNumber)
@@ -477,14 +477,14 @@ void ICACHE_RAM_ATTR SX126xDriver::IsrCallback(SX12XX_Radio_Number_t radioNumber
     {
         hal.TXRXdisable();
         instance->TXnbISR();
-        irqClearRadio = SX126x_Radio_All;
+        irqClearRadio = SX12XX_Radio_All;
     }
     else if (irqStatus & SX126x_IRQ_RX_DONE)
     {
         if (instance->RXnbISR(irqStatus, radioNumber))
         {
             instance->lastSuccessfulPacketRadio = radioNumber;
-            irqClearRadio = SX126x_Radio_All; // Packet received so clear all radios and dont spend extra time retrieving data.
+            irqClearRadio = SX12XX_Radio_All; // Packet received so clear all radios and dont spend extra time retrieving data.
         }
     }
     else

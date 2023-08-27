@@ -79,29 +79,7 @@
             "nano": {
                 "product_name": "Alz 2.4GHz Nano RX",
                 "lua_name": "Alz Nano2G4RX",
-                "layout_file": "Generic 2400 PA.json",
-                "overlay": {
-                    "radio_dcdc": true
-                },
-                "upload_methods": ["uart", "wifi", "betaflight"],
-                "platform": "esp8285",
-                "firmware": "Unified_ESP8285_2400_RX"
-            },
-            "max-nano": {
-                "product_name": "Alz 2.4GHz Nano RX MAX",
-                "lua_name": "Alz Nano2G4RXMax",
-                "layout_file": "Generic 2400 PA MAX.json",
-                "overlay": {
-                    "radio_dcdc": true
-                },
-                "upload_methods": ["uart", "wifi", "betaflight"],
-                "platform": "esp8285",
-                "firmware": "Unified_ESP8285_2400_RX"
-            },
-            "pa-rgb": {
-                "product_name": "Alz 2.4Ghz RX RGB",
-                "lua_name": "Alz 2G4RXMaxRGB",
-                "layout_file": "Generic 2400 PA MAX RGB.json",
+                "layout_file": "Alz 2400.json",
                 "overlay": {
                     "radio_dcdc": true
                 },
@@ -136,14 +114,6 @@
                 "product_name": "Alz 900MHz RX",
                 "lua_name": "Alz 900RX",
                 "layout_file": "Alz 900.json",
-                "upload_methods": ["uart", "wifi", "betaflight"],
-                "platform": "esp8285",
-                "firmware": "Unified_ESP8285_900_RX"
-            },
-            "nano": {
-                "product_name": "Alz 900MHz Nano RX",
-                "lua_name": "Alz Nano900RX",
-                "layout_file": "Generic 900 PA RGB.json",
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp8285",
                 "firmware": "Unified_ESP8285_900_RX"

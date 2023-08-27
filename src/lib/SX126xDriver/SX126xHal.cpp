@@ -65,7 +65,7 @@ void SX126xHal::init()
     {
         pinMode(GPIO_PIN_NSS_2, OUTPUT);
     }
-    setNss(SX126x_Radio_All, HIGH);
+    setNss(SX12XX_Radio_All, HIGH);
 
     if (GPIO_PIN_PA_ENABLE != UNDEF_PIN)
     {
@@ -151,7 +151,7 @@ void SX126xHal::reset(void)
     }
 
     BusyDelay(10000); // 10ms delay if GPIO_PIN_BUSY is undefined
-    WaitOnBusy(SX126x_Radio_All);
+    WaitOnBusy(SX12XX_Radio_All);
 
     //this->BusyState = SX126x_NOT_BUSY;
     DBGLN("SX126x Ready!");
@@ -317,7 +317,7 @@ bool ICACHE_RAM_ATTR SX126xHal::WaitOnBusy(SX12XX_Radio_Number_t radioNumber)
             {
                 if (digitalRead(GPIO_PIN_BUSY_2) == LOW) return true;
             }
-            else if (radioNumber == SX126x_Radio_All)
+            else if (radioNumber == SX12XX_Radio_All)
             {
                 if (GPIO_PIN_BUSY_2 != UNDEF_PIN)
                 {
@@ -368,7 +368,7 @@ void ICACHE_RAM_ATTR SX126xHal::TXenable(SX12XX_Radio_Number_t radioNumber)
         digitalWrite(GPIO_PIN_RX_ENABLE, LOW);
     if (GPIO_PIN_TX_ENABLE != UNDEF_PIN && radioNumber & SX12XX_Radio_1)
         digitalWrite(GPIO_PIN_TX_ENABLE, HIGH);
-        
+
     if (GPIO_PIN_RX_ENABLE_2 != UNDEF_PIN)
         digitalWrite(GPIO_PIN_RX_ENABLE_2, LOW);
     if (GPIO_PIN_TX_ENABLE_2 != UNDEF_PIN && radioNumber & SX12XX_Radio_2)
@@ -379,12 +379,12 @@ void ICACHE_RAM_ATTR SX126xHal::RXenable()
 {
     if (GPIO_PIN_PA_ENABLE != UNDEF_PIN)
         digitalWrite(GPIO_PIN_PA_ENABLE, HIGH);
-        
+
     if (GPIO_PIN_RX_ENABLE != UNDEF_PIN)
         digitalWrite(GPIO_PIN_RX_ENABLE, HIGH);
     if (GPIO_PIN_TX_ENABLE != UNDEF_PIN)
         digitalWrite(GPIO_PIN_TX_ENABLE, LOW);
-        
+
     if (GPIO_PIN_RX_ENABLE_2 != UNDEF_PIN)
         digitalWrite(GPIO_PIN_RX_ENABLE_2, HIGH);
     if (GPIO_PIN_TX_ENABLE_2 != UNDEF_PIN)
@@ -395,12 +395,12 @@ void ICACHE_RAM_ATTR SX126xHal::TXRXdisable()
 {
     if (GPIO_PIN_PA_ENABLE != UNDEF_PIN)
         digitalWrite(GPIO_PIN_PA_ENABLE, LOW);
-        
+
     if (GPIO_PIN_RX_ENABLE != UNDEF_PIN)
         digitalWrite(GPIO_PIN_RX_ENABLE, LOW);
     if (GPIO_PIN_TX_ENABLE != UNDEF_PIN)
         digitalWrite(GPIO_PIN_TX_ENABLE, LOW);
-        
+
     if (GPIO_PIN_RX_ENABLE_2 != UNDEF_PIN)
         digitalWrite(GPIO_PIN_RX_ENABLE_2, LOW);
     if (GPIO_PIN_TX_ENABLE_2 != UNDEF_PIN)

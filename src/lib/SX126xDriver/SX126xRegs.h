@@ -355,7 +355,7 @@
 //{
 //    SX126x_Radio_1 = 1 << 0,
 //    SX126x_Radio_2 = 1 << 1,
-//    SX126x_Radio_All = 0xFF,
+//    SX12XX_Radio_All = 0xFF,
 //} SX12XX_Radio_Number_t;
 
 typedef enum
@@ -491,6 +491,7 @@ typedef enum
 // TODO
 typedef enum
 {
+    SX126x_LORA_BW_500 = 0x06,
     SX126x_LORA_BW_0200 = 0x34,
     SX126x_LORA_BW_0400 = 0x26,
     SX126x_LORA_BW_0800 = 0x18,
