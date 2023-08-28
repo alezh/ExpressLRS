@@ -351,7 +351,7 @@
 #define SX126x_REG_FREQ_ERR_CORRECTION              0x93C
 
 #define SX126x_XTAL_FREQ 32000000
-#define FREQ_STEP ((double)(SX126x_XTAL_FREQ / pow(2.0, 18.0)))  // 198.3642578125   2, 18
+#define FREQ_STEP ((double)(SX126x_XTAL_FREQ / pow(2.0, 25.0)))  // 198.3642578125   2, 18
 
 //typedef enum
 //{
