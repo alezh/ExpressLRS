@@ -103,9 +103,9 @@ bool SX126xDriver::Begin()
             return false;
         }
     }
-    hal.WriteCommand(SX126X_RADIO_SET_RX_TX_FALLBACK_MODE, RADIOLIB_SX126X_RX_TX_FALLBACK_MODE_FS, SX12XX_Radio_All);
+    hal.WriteCommand(SX126X_RADIO_SET_RX_TX_FALLBACK_MODE, 0x40, SX12XX_Radio_All);
     hal.WriteRegister(RADIOLIB_SX126X_REG_RX_GAIN, 0x96, SX12XX_Radio_All);
-    hal.WriteCommand(SX126x_RADIO_SET_DIO2_AS_RF_SWITCH_CTRL, LLCC68_DIO2ASSWITCHCTRL_ON, SX12XX_Radio_All);
+    hal.WriteCommand(SX126x_RADIO_SET_DIO2_AS_RF_SWITCH_CTRL, 0x01, SX12XX_Radio_All);
 
     pwrCurrent = PWRPENDING_NONE;
     SetOutputPower(SX126X_POWER_MIN);
