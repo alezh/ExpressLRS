@@ -99,7 +99,6 @@ typedef enum : uint8_t
     RATE_FLRC_500HZ,
     RATE_FLRC_1000HZ,
     RATE_DVDA_50HZ,
-    RATE_126x_LORA_50HZ = 3
 } expresslrs_RFrates_e; // Max value of 16 since only 4 bits have been assigned in the sync package.
 
 enum {
@@ -215,8 +214,7 @@ extern SX1280Driver Radio;
 
 #elif defined(RADIO_SX126X)
 #define RATE_MAX 8
-#define RATE_DEFAULT 0
-#define RATE_BINDING RATE_126x_LORA_50HZ // 50Hz bind mode
+#define RATE_BINDING RATE_LORA_50HZ // 50Hz bind mode
 
 extern SX126xDriver Radio;
 

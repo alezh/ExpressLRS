@@ -4,6 +4,8 @@
 
 /* Register defines borrowed from the RadioLib project: */
 /* RadioLib/src/modules/SX126x/SX126x.h                 */
+#define SX126X_POWER_MIN (-9)
+#define SX126X_POWER_MAX (22)
 
 // SX126X physical layer properties
 #define RADIOLIB_SX126X_FREQUENCY_STEP_SIZE                    0.9536743164
@@ -349,7 +351,7 @@
 #define SX126x_REG_FREQ_ERR_CORRECTION              0x93C
 
 #define SX126x_XTAL_FREQ 32000000
-#define FREQ_STEP ((double)(SX126x_XTAL_FREQ / pow(2.0, 18.0)))  // 198.3642578125
+#define FREQ_STEP ((double)(SX126x_XTAL_FREQ / pow(2.0, 25.0)))  // 198.3642578125   2, 18
 
 //typedef enum
 //{
@@ -377,6 +379,7 @@ typedef enum
     SX126x_MODE_STDBY_XOSC,   //! The radio is in standby mode with XOSC oscillator
     SX126x_MODE_FS,           //! The radio is in frequency synthesis mode
     SX126x_MODE_RX,           //! The radio is in receive mode
+    SX126x_MODE_RX_CONT,      //! The radio is in continuous receive mode
     SX126x_MODE_TX,           //! The radio is in transmit mode
     SX126x_MODE_CAD           //! The radio is in channel activity detection mode
 } SX126x_RadioOperatingModes_t;
@@ -427,8 +430,8 @@ typedef enum
 // TODO
 typedef enum
 {
-    SX126x_LORA_IQ_NORMAL = 0x40,
-    SX126x_LORA_IQ_INVERTED = 0x00,
+    SX126x_LORA_IQ_NORMAL = 0x00, //0x40
+    SX126x_LORA_IQ_INVERTED = 0x01, //0x01
 } SX126x_RadioLoRaIQModes_t;
 
 // TODO
@@ -491,6 +494,8 @@ typedef enum
 // TODO
 typedef enum
 {
+    SX126x_LORA_BW_125 = 0x04,
+    SX126x_LORA_BW_250 = 0x05,
     SX126x_LORA_BW_500 = 0x06,
     SX126x_LORA_BW_0200 = 0x34,
     SX126x_LORA_BW_0400 = 0x26,
