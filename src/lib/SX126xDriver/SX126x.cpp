@@ -1,11 +1,13 @@
 #include "SX126xRegs.h"
 #include "SX126xHal.h"
 #include "SX126x.h"
+#include "RFAMP_hal.h"
 #include "logging.h"
 
 SX126xHal hal;
 SX126xDriver *SX126xDriver::instance = NULL;
 
+RFAMP_hal RFAMP;
 //DEBUG_SX126x_OTA_TIMING
 
 /* Steps for startup
@@ -64,8 +66,9 @@ void SX126xDriver::End()
 {
     SetMode(SX126x_MODE_SLEEP, SX12XX_Radio_All);
     hal.end();
+    RFAMP.TXRXdisable();
     RemoveCallbacks();
-//    currFreq = (uint32_t)((double)2400000000 / (double)FREQ_STEP);
+    currFreq = (uint32_t)((double)2400000000 / (double)FREQ_STEP);
 }
 
 bool SX126xDriver::Begin()
@@ -76,6 +79,8 @@ bool SX126xDriver::Begin()
 
     hal.reset();
     DBGLN("SX126x Begin");
+
+    RFAMP.init();
 
     SetMode(SX126x_MODE_STDBY_RC, SX12XX_Radio_All); // Put in STDBY_RC mode.  Must be SX126x_MODE_STDBY_RC for SX126x_RADIO_SET_REGULATORMODE to be set.
     uint8_t syncWordMSB = hal.ReadRegister(0x0740, SX12XX_Radio_1);
@@ -126,7 +131,7 @@ void SX126xDriver::startCWTest(uint32_t freq, SX12XX_Radio_Number_t radioNumber)
     uint8_t buffer;         // we just need a buffer for the write command
     SetFrequencyHz(freq, radioNumber);
     CommitOutputPower();
-    hal.TXenable(radioNumber);
+    RFAMP.TXenable(radioNumber);
     hal.WriteCommand(SX126x_RADIO_SET_TXCONTINUOUSWAVE, &buffer, 0, radioNumber);
 }
 
@@ -551,7 +556,7 @@ void ICACHE_RAM_ATTR SX126xDriver::TXnb(uint8_t * data, uint8_t size, SX12XX_Rad
         }
     }
 
-    hal.TXenable(radioNumber); // do first to allow PA stablise
+    RFAMP.TXenable(radioNumber); // do first to allow PA stablise
     hal.WriteBuffer(0x00, data, size, radioNumber); //todo fix offset to equal fifo addr
     instance->SetMode(SX126x_MODE_TX, radioNumber);
 
@@ -583,7 +588,7 @@ bool ICACHE_RAM_ATTR SX126xDriver::RXnbISR(uint16_t irqStatus, SX12XX_Radio_Numb
 
 void ICACHE_RAM_ATTR SX126xDriver::RXnb(SX126x_RadioOperatingModes_t rxMode)
 {
-    hal.RXenable();
+    RFAMP.RXenable();
     SetMode(rxMode, SX12XX_Radio_All);
 }
 
@@ -652,7 +657,7 @@ void ICACHE_RAM_ATTR SX126xDriver::IsrCallback(SX12XX_Radio_Number_t radioNumber
 
     if (irqStatus & SX126x_IRQ_TX_DONE)
     {
-        hal.TXRXdisable();
+        RFAMP.TXRXdisable();
         instance->ClearIrqStatus(SX126x_IRQ_RADIO_ALL, SX12XX_Radio_All);
         instance->TXnbISR();
         irqClearRadio = SX12XX_Radio_All;

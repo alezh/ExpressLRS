@@ -54,10 +54,6 @@ public:
 
     bool ICACHE_RAM_ATTR WaitOnBusy(SX12XX_Radio_Number_t radioNumber);
 
-    void ICACHE_RAM_ATTR TXenable(SX12XX_Radio_Number_t radioNumber);
-    void ICACHE_RAM_ATTR RXenable();
-    void ICACHE_RAM_ATTR TXRXdisable();
-
     static ICACHE_RAM_ATTR void dioISR_1();
     static ICACHE_RAM_ATTR void dioISR_2();
     void (*IsrCallback_1)(); //function pointer for callback

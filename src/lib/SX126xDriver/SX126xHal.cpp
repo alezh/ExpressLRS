@@ -61,51 +61,20 @@ void SX126xHal::init()
     }
 
     pinMode(GPIO_PIN_NSS, OUTPUT);
+    digitalWrite(GPIO_PIN_NSS, HIGH);
     if (GPIO_PIN_NSS_2 != UNDEF_PIN)
     {
         pinMode(GPIO_PIN_NSS_2, OUTPUT);
-    }
-    setNss(SX12XX_Radio_All, HIGH);
-
-    if (GPIO_PIN_PA_ENABLE != UNDEF_PIN)
-    {
-        DBGLN("Use PA enable pin: %d", GPIO_PIN_PA_ENABLE);
-        pinMode(GPIO_PIN_PA_ENABLE, OUTPUT);
-        digitalWrite(GPIO_PIN_PA_ENABLE, LOW);
-    }
-
-    if (GPIO_PIN_TX_ENABLE != UNDEF_PIN)
-    {
-        DBGLN("Use TX pin: %d", GPIO_PIN_TX_ENABLE);
-        pinMode(GPIO_PIN_TX_ENABLE, OUTPUT);
-        digitalWrite(GPIO_PIN_TX_ENABLE, LOW);
-    }
-
-    if (GPIO_PIN_RX_ENABLE != UNDEF_PIN)
-    {
-        DBGLN("Use RX pin: %d", GPIO_PIN_RX_ENABLE);
-        pinMode(GPIO_PIN_RX_ENABLE, OUTPUT);
-        digitalWrite(GPIO_PIN_RX_ENABLE, LOW);
-    }
-
-    if (GPIO_PIN_TX_ENABLE_2 != UNDEF_PIN)
-    {
-        DBGLN("Use TX_2 pin: %d", GPIO_PIN_TX_ENABLE_2);
-        pinMode(GPIO_PIN_TX_ENABLE_2, OUTPUT);
-        digitalWrite(GPIO_PIN_TX_ENABLE_2, LOW);
-    }
-
-    if (GPIO_PIN_RX_ENABLE_2 != UNDEF_PIN)
-    {
-        DBGLN("Use RX_2 pin: %d", GPIO_PIN_RX_ENABLE_2);
-        pinMode(GPIO_PIN_RX_ENABLE_2, OUTPUT);
-        digitalWrite(GPIO_PIN_RX_ENABLE_2, LOW);
+        digitalWrite(GPIO_PIN_NSS, HIGH);
     }
 
 #ifdef PLATFORM_ESP32
-    SPI.begin(GPIO_PIN_SCK, GPIO_PIN_MISO, GPIO_PIN_MOSI, -1); // sck, miso, mosi, ss (ss can be any GPIO)
+    SPI.begin(GPIO_PIN_SCK, GPIO_PIN_MISO, GPIO_PIN_MOSI, GPIO_PIN_NSS); // sck, miso, mosi, ss (ss can be any GPIO)
     gpio_pullup_en((gpio_num_t)GPIO_PIN_MISO);
     SPI.setFrequency(10000000);
+    SPI.setHwCs(true);
+    if (GPIO_PIN_NSS_2 != UNDEF_PIN) spiAttachSS(SPI.bus(), 1, GPIO_PIN_NSS_2);
+    spiEnableSSPins(SPI.bus(), SX12XX_Radio_All);
 #elif defined(PLATFORM_ESP8266)
     DBGLN("PLATFORM_ESP8266");
     SPI.begin();
@@ -133,8 +102,13 @@ void SX126xHal::init()
 
 void ICACHE_RAM_ATTR SX126xHal::setNss(uint8_t radioNumber, bool state)
 {
+    #if defined(PLATFORM_ESP32)
+    spiDisableSSPins(SPI.bus(), ~radioNumber);
+    spiEnableSSPins(SPI.bus(), radioNumber);
+    #else
     if (radioNumber & SX12XX_Radio_1) digitalWrite(GPIO_PIN_NSS, state);
     if (GPIO_PIN_NSS_2 != UNDEF_PIN && radioNumber & SX12XX_Radio_2) digitalWrite(GPIO_PIN_NSS_2, state);
+    #endif
 }
 
 void SX126xHal::reset(void)
@@ -357,54 +331,6 @@ void ICACHE_RAM_ATTR SX126xHal::dioISR_2()
 {
     if (instance->IsrCallback_2)
         instance->IsrCallback_2();
-}
-
-void ICACHE_RAM_ATTR SX126xHal::TXenable(SX12XX_Radio_Number_t radioNumber)
-{
-    if (GPIO_PIN_PA_ENABLE != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_PA_ENABLE, HIGH);
-
-    if (GPIO_PIN_RX_ENABLE != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_RX_ENABLE, LOW);
-    if (GPIO_PIN_TX_ENABLE != UNDEF_PIN && radioNumber & SX12XX_Radio_1)
-        digitalWrite(GPIO_PIN_TX_ENABLE, HIGH);
-
-    if (GPIO_PIN_RX_ENABLE_2 != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_RX_ENABLE_2, LOW);
-    if (GPIO_PIN_TX_ENABLE_2 != UNDEF_PIN && radioNumber & SX12XX_Radio_2)
-        digitalWrite(GPIO_PIN_TX_ENABLE_2, HIGH);
-}
-
-void ICACHE_RAM_ATTR SX126xHal::RXenable()
-{
-    if (GPIO_PIN_PA_ENABLE != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_PA_ENABLE, HIGH);
-
-    if (GPIO_PIN_RX_ENABLE != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_RX_ENABLE, HIGH);
-    if (GPIO_PIN_TX_ENABLE != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_TX_ENABLE, LOW);
-
-    if (GPIO_PIN_RX_ENABLE_2 != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_RX_ENABLE_2, HIGH);
-    if (GPIO_PIN_TX_ENABLE_2 != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_TX_ENABLE_2, LOW);
-}
-
-void ICACHE_RAM_ATTR SX126xHal::TXRXdisable()
-{
-    if (GPIO_PIN_PA_ENABLE != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_PA_ENABLE, LOW);
-
-    if (GPIO_PIN_RX_ENABLE != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_RX_ENABLE, LOW);
-    if (GPIO_PIN_TX_ENABLE != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_TX_ENABLE, LOW);
-
-    if (GPIO_PIN_RX_ENABLE_2 != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_RX_ENABLE_2, LOW);
-    if (GPIO_PIN_TX_ENABLE_2 != UNDEF_PIN)
-        digitalWrite(GPIO_PIN_TX_ENABLE_2, LOW);
 }
 
 #endif // UNIT_TEST
