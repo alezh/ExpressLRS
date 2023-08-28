@@ -312,8 +312,8 @@ void SX126xDriver::SetMode(SX126x_RadioOperatingModes_t OPmode, SX12XX_Radio_Num
         hal.WriteCommand(SX126x_RADIO_SET_SLEEP, (uint8_t)0x01, radioNumber);
         break;
 
-    case SX126x_MODE_CALIBRATION:
-        break;
+    // case SX126x_MODE_CALIBRATION:
+    //     break;
 
     case SX126x_MODE_STDBY_RC:
         hal.WriteCommand(SX126x_RADIO_SET_STANDBY, SX126x_STDBY_RC, radioNumber, 1500);

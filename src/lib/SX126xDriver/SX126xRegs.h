@@ -374,7 +374,7 @@ typedef enum
 typedef enum
 {
     SX126x_MODE_SLEEP = 0x00, //! The radio is in sleep mode
-    SX126x_MODE_CALIBRATION,  //! The radio is in calibration mode
+    // SX126x_MODE_CALIBRATION,  //! The radio is in calibration mode
     SX126x_MODE_STDBY_RC,     //! The radio is in standby mode with RC oscillator
     SX126x_MODE_STDBY_XOSC,   //! The radio is in standby mode with XOSC oscillator
     SX126x_MODE_FS,           //! The radio is in frequency synthesis mode
