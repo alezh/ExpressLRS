@@ -103,9 +103,9 @@ bool SX126xDriver::Begin()
             return false;
         }
     }
-    hal.WriteCommand(SX126X_CMD_SET_RX_TX_FALLBACK_MODE, RADIOLIB_SX126X_RX_TX_FALLBACK_MODE_FS, SX12XX_Radio_All);
+    hal.WriteCommand(SX126X_RADIO_SET_RX_TX_FALLBACK_MODE, RADIOLIB_SX126X_RX_TX_FALLBACK_MODE_FS, SX12XX_Radio_All);
     hal.WriteRegister(RADIOLIB_SX126X_REG_RX_GAIN, 0x96, SX12XX_Radio_All);
-    hal.WriteCommand(SX126X_CMD_SET_DIO2_AS_RF_SWITCH_CTRL, LLCC68_DIO2ASSWITCHCTRL_ON, SX12XX_Radio_All);
+    hal.WriteCommand(SX126x_RADIO_SET_DIO2_AS_RF_SWITCH_CTRL, LLCC68_DIO2ASSWITCHCTRL_ON, SX12XX_Radio_All);
 
     pwrCurrent = PWRPENDING_NONE;
     SetOutputPower(SX126X_POWER_MIN);
@@ -177,7 +177,7 @@ void SX126xDriver::Config(uint8_t bw, uint8_t sf, uint8_t cr, uint32_t regfreq,
         calFreq[0] = 0x6B;
         calFreq[1] = 0x6F;
     }
-    hal.WriteCommand(SX126X_CMD_CALIBRATE_IMAGE, calFreq, sizeof(calFreq), SX12XX_Radio_All);
+    hal.WriteCommand(SX126X_RADIO_SET_CALIBRATE_IMAGE, calFreq, sizeof(calFreq), SX12XX_Radio_All);
 
 //    uint8_t dio1Mask = SX126x_IRQ_TX_DONE | SX126x_IRQ_RX_DONE | SX126x_IRQ_RX_TX_TIMEOUT;
     uint8_t dio1Mask = SX126x_IRQ_TX_DONE | SX126x_IRQ_RX_DONE;
@@ -276,10 +276,10 @@ void ICACHE_RAM_ATTR SX126xDriver::CommitOutputPower()
 
     // PA Operating Modes with Optimal Settings
     uint8_t paparams[4] = {paDutyCycle, hpMax, 0x00, 0x01};
-    hal.WriteCommand(SX126X_CMD_SET_PA_CONFIG, paparams, sizeof(paparams), SX12XX_Radio_All, 25);
+    hal.WriteCommand(SX126X_RADIO_SET_PA_CONFIG, paparams, sizeof(paparams), SX12XX_Radio_All, 25);
 
     uint8_t buf[2] = {pwrCurrent + pwrOffset, (uint8_t)SX126x_RADIO_RAMP_02_US};
-    hal.WriteCommand(SX126X_CMD_SET_TX_PARAMS, buf, sizeof(buf), SX12XX_Radio_All);
+    hal.WriteCommand(SX126x_RADIO_SET_TXPARAMS, buf, sizeof(buf), SX12XX_Radio_All);
 }
 
 //void SX126xDriver::SetOutputPower(int8_t power)
