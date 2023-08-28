@@ -27,7 +27,7 @@
 
     "joystick": 35,
     "joystick_values": [1365, 3276, 2048, 2730, 0, 4095],
-
+    "radio_dcdc": true,
     "screen_cs": 16,
     "screen_dc": 4,
     "screen_mosi": 32,
@@ -35,7 +35,7 @@
     "screen_sck": 33,
     "screen_bl": 17,
     "screen_type": 4,
-    
+
     "use_backpack": true,
     "debug_backpack_baud": 460800,
     "debug_backpack_rx": 3,
