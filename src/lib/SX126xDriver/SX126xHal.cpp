@@ -31,7 +31,7 @@ SX126xHal::SX126xHal()
 
 void SX126xHal::end()
 {
-    TXRXdisable(); // make sure the RX/TX amp pins are disabled
+    // TXRXdisable(); // make sure the RX/TX amp pins are disabled
     detachInterrupt(GPIO_PIN_DIO1);
     if (GPIO_PIN_DIO1_2 != UNDEF_PIN)
     {
