@@ -64,11 +64,15 @@ SX126xDriver::SX126xDriver(): SX12xxDriverCommon()
 
 void SX126xDriver::End()
 {
-    SetMode(SX126x_MODE_SLEEP, SX12XX_Radio_All);
+    if (currOpmode != SX126x_MODE_SLEEP)
+    {
+        SetMode(SX126x_MODE_SLEEP, SX12XX_Radio_All);
+    }
+//    SetMode(SX126x_MODE_SLEEP, SX12XX_Radio_All);
     hal.end();
     RFAMP.TXRXdisable();
     RemoveCallbacks();
-    currFreq = (uint32_t)((double)2400000000 / (double)FREQ_STEP);
+//    currFreq = (uint32_t)((double)903000000 / (double)FREQ_STEP);
 }
 
 bool SX126xDriver::Begin()
@@ -76,13 +80,12 @@ bool SX126xDriver::Begin()
     hal.init();
     hal.IsrCallback_1 = &SX126xDriver::IsrCallback_1;
     hal.IsrCallback_2 = &SX126xDriver::IsrCallback_2;
-
     hal.reset();
     DBGLN("SX126x Begin");
-
     RFAMP.init();
 
     SetMode(SX126x_MODE_STDBY_RC, SX12XX_Radio_All); // Put in STDBY_RC mode.  Must be SX126x_MODE_STDBY_RC for SX126x_RADIO_SET_REGULATORMODE to be set.
+
     uint8_t syncWordMSB = hal.ReadRegister(0x0740, SX12XX_Radio_1);
     uint8_t syncWordLSB = hal.ReadRegister(0x0741, SX12XX_Radio_1);
     uint16_t loraSyncword = ((uint16_t)syncWordMSB << 8) | syncWordLSB;
@@ -90,27 +93,22 @@ bool SX126xDriver::Begin()
     if (loraSyncword != 0x1424) {
         return false;
     }
-//    uint16_t firmwareRev = (((hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB, SX12XX_Radio_1)) << 8) | (hal.ReadRegister(REG_LR_FIRMWARE_VERSION_MSB + 1, SX12XX_Radio_1)));
-//    DBGLN("Read Vers sx126x #1: %d", firmwareRev);
-//    if ((firmwareRev == 0) || (firmwareRev == 65535))
-//    {
-//        // SPI communication failed, just return without configuration
-//        return false;
-//    }
 
     if (GPIO_PIN_NSS_2 != UNDEF_PIN)
     {
-        syncWordMSB = hal.ReadRegister(0x0740, SX12XX_Radio_2);
-        syncWordLSB = hal.ReadRegister(0x0741, SX12XX_Radio_2);
+        syncWordMSB = hal.ReadRegister(RADIOLIB_SX126X_REG_LORA_SYNC_WORD_MSB, SX12XX_Radio_2);
+        syncWordLSB = hal.ReadRegister(RADIOLIB_SX126X_REG_LORA_SYNC_WORD_LSB, SX12XX_Radio_2);
         loraSyncword = ((uint16_t)syncWordMSB << 8) | syncWordLSB;
         DBGLN("Read Vers LLCC68 #2 loraSyncword (5156): %d", loraSyncword);
         if (loraSyncword != 0x1424) {
             return false;
         }
     }
-    hal.WriteCommand(SX126X_RADIO_SET_RX_TX_FALLBACK_MODE, 0x40, SX12XX_Radio_All);
+    //auto FS
+    hal.WriteCommand(SX126X_RADIO_SET_RX_TX_FALLBACK_MODE, RADIOLIB_SX126X_RX_TX_FALLBACK_MODE_FS, SX12XX_Radio_All);
     hal.WriteRegister(RADIOLIB_SX126X_REG_RX_GAIN, 0x96, SX12XX_Radio_All);
-    hal.WriteCommand(SX126x_RADIO_SET_DIO2_AS_RF_SWITCH_CTRL, 0x01, SX12XX_Radio_All);
+    //set DIO2 as RF control switching
+    //hal.WriteCommand(SX126x_RADIO_SET_DIO2_AS_RF_SWITCH_CTRL, 0x01, SX12XX_Radio_All);
 
     pwrCurrent = PWRPENDING_NONE;
     SetOutputPower(SX126X_POWER_MIN);
@@ -136,14 +134,13 @@ void SX126xDriver::startCWTest(uint32_t freq, SX12XX_Radio_Number_t radioNumber)
 }
 
 void SX126xDriver::Config(uint8_t bw, uint8_t sf, uint8_t cr, uint32_t regfreq,
-                          uint8_t PreambleLength, bool InvertIQ, uint8_t _PayloadLength, uint32_t interval,
-                          uint32_t flrcSyncWord, uint16_t flrcCrcSeed, uint8_t flrc)
+                          uint8_t PreambleLength, bool InvertIQ, uint8_t _PayloadLength, uint32_t interval)
 {
     PayloadLength = _PayloadLength;
     IQinverted = InvertIQ;
     SetMode(SX126x_MODE_STDBY_RC, SX12XX_Radio_All);
     hal.WriteCommand(SX126x_RADIO_SET_PACKETTYPE, SX126x_PACKET_TYPE_LORA, SX12XX_Radio_All, 20);
-    DBG("Config LoRa ");
+    DBGLN("Config LoRa ");
     SetFrequencyReg(regfreq);
     ConfigModParamsLoRa(bw, sf, cr);
 
@@ -228,7 +225,7 @@ void SX126xDriver::clearTimeout(SX12XX_Radio_Number_t radioNumber)
 
 void SX126xDriver::SetOutputPower(int8_t power)
 {
-    uint8_t pwrNew = constrain(power, -9, 22);
+    uint8_t pwrNew = constrain(power, SX126X_POWER_MIN, SX126X_POWER_MAX);
 
     if ((pwrPending == PWRPENDING_NONE && pwrCurrent != pwrNew) || pwrPending != pwrNew)
     {
@@ -376,35 +373,35 @@ void SX126xDriver::ConfigModParamsLoRa(uint8_t bw, uint8_t sf, uint8_t cr)
 
     hal.WriteCommand(SX126x_RADIO_SET_MODULATIONPARAMS, rfparams, sizeof(rfparams), SX12XX_Radio_All, 25);
 
-    uint8_t reg = hal.ReadRegister(0x889, SX12XX_Radio_1);
+    uint8_t reg = hal.ReadRegister(RADIOLIB_SX126X_REG_SENSITIVITY_CONFIG, SX12XX_Radio_1);
     if (bw == SX126x_LORA_BW_500)
     {
-        hal.WriteRegister(0x889, reg & 0xFB, SX12XX_Radio_1);
+        hal.WriteRegister(RADIOLIB_SX126X_REG_SENSITIVITY_CONFIG, reg & 0xFB, SX12XX_Radio_1);
     }
     else
     {
-        hal.WriteRegister(0x889, reg | 0x04, SX12XX_Radio_1);
+        hal.WriteRegister(RADIOLIB_SX126X_REG_SENSITIVITY_CONFIG, reg | 0x04, SX12XX_Radio_1);
     }
     if (GPIO_PIN_NSS_2 != UNDEF_PIN)
     {
-        reg = hal.ReadRegister(0x889, SX12XX_Radio_2);
+        reg = hal.ReadRegister(RADIOLIB_SX126X_REG_SENSITIVITY_CONFIG, SX12XX_Radio_2);
         if (bw == SX126x_LORA_BW_500)
         {
-            hal.WriteRegister(0x889, reg & 0xFB, SX12XX_Radio_2);
+            hal.WriteRegister(RADIOLIB_SX126X_REG_SENSITIVITY_CONFIG, reg & 0xFB, SX12XX_Radio_2);
         }
         else
         {
-            hal.WriteRegister(0x889, reg | 0x04, SX12XX_Radio_2);
+            hal.WriteRegister(RADIOLIB_SX126X_REG_SENSITIVITY_CONFIG, reg | 0x04, SX12XX_Radio_2);
         }
     }
 
     // as per section 15.2: Better Resistance of the LLCC68 Tx to Antenna Mismatch
-    reg = hal.ReadRegister(0x8D8, SX12XX_Radio_1);
-    hal.WriteRegister(0x8D8, reg | 0x1E, SX12XX_Radio_1);
+    reg = hal.ReadRegister(RADIOLIB_SX126X_REG_TX_CLAMP_CONFIG, SX12XX_Radio_1);
+    hal.WriteRegister(RADIOLIB_SX126X_REG_TX_CLAMP_CONFIG, reg | 0x1E, SX12XX_Radio_1);
     if (GPIO_PIN_NSS_2 != UNDEF_PIN)
     {
-        reg = hal.ReadRegister(0x8D8, SX12XX_Radio_2);
-        hal.WriteRegister(0x8D8, reg | 0x1E, SX12XX_Radio_2);
+        reg = hal.ReadRegister(RADIOLIB_SX126X_REG_TX_CLAMP_CONFIG, SX12XX_Radio_2);
+        hal.WriteRegister(RADIOLIB_SX126X_REG_TX_CLAMP_CONFIG, reg | 0x1E, SX12XX_Radio_2);
     }
 //    switch (sf)
 //    {
@@ -512,7 +509,7 @@ void ICACHE_RAM_ATTR SX126xDriver::ClearIrqStatus(uint16_t irqMask, SX12XX_Radio
 {
     uint8_t buf[2];
 
-    buf[0] = (uint8_t)(((uint16_t)irqMask >> 8) & 0x00FF);
+    buf[0] = (uint8_t)(((uint16_t)irqMask >> 8) & 0xFF00);
     buf[1] = (uint8_t)((uint16_t)irqMask & 0x00FF);
 
     hal.WriteCommand(SX126x_RADIO_CLR_IRQSTATUS, buf, sizeof(buf), radioNumber);
@@ -525,6 +522,7 @@ void ICACHE_RAM_ATTR SX126xDriver::TXnbISR()
     endTX = micros();
     DBGLN("TOA: %d", endTX - beginTX);
 #endif
+    CommitOutputPower();
     TXdoneCallback();
 }
 
