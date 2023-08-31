@@ -246,39 +246,39 @@ void ICACHE_RAM_ATTR SX126xDriver::CommitOutputPower()
     pwrCurrent = pwrPending;
     pwrPending = PWRPENDING_NONE;
 
-    uint8_t pwrOffset = 0;
-    uint8_t paDutyCycle = 0x04;
-    uint8_t hpMax = 0x07;
-
-    if (pwrCurrent > 30) // power range -9 to -1.
-    {
-        pwrOffset = 8;
-        paDutyCycle = 0x02;
-        hpMax = 0x02;
-    }
-    else if (pwrCurrent > 20)
-    {
-        paDutyCycle = 0x04;
-        hpMax = 0x07;
-    }
-    else if (pwrCurrent > 17)
-    {
-        pwrOffset = 2;
-        paDutyCycle = 0x03;
-        hpMax = 0x05;
-    }
-    else if (pwrCurrent > 14)
-    {
-        pwrOffset = 5;
-        paDutyCycle = 0x02;
-        hpMax = 0x3;
-    }
-    else
-    {
-        pwrOffset = 8;
-        paDutyCycle = 0x02;
-        hpMax = 0x02;
-    }
+//    uint8_t pwrOffset = 0;
+//    uint8_t paDutyCycle = 0x04;
+//    uint8_t hpMax = 0x07;
+//
+//    if (pwrCurrent > 30) // power range -9 to -1.
+//    {
+//        pwrOffset = 8;
+//        paDutyCycle = 0x02;
+//        hpMax = 0x02;
+//    }
+//    else if (pwrCurrent > 20)
+//    {
+//        paDutyCycle = 0x04;
+//        hpMax = 0x07;
+//    }
+//    else if (pwrCurrent > 17)
+//    {
+//        pwrOffset = 2;
+//        paDutyCycle = 0x03;
+//        hpMax = 0x05;
+//    }
+//    else if (pwrCurrent > 14)
+//    {
+//        pwrOffset = 5;
+//        paDutyCycle = 0x02;
+//        hpMax = 0x3;
+//    }
+//    else
+//    {
+//        pwrOffset = 8;
+//        paDutyCycle = 0x02;
+//        hpMax = 0x02;
+//    }
 
     // PA Operating Modes with Optimal Settings
     uint8_t paparams[4] = {0x04, 0x07, 0x00, 0x01};
@@ -429,7 +429,7 @@ void SX126xDriver::SetPacketParamsLoRa(uint8_t PreambleLength, SX126x_RadioLoRaP
     } else {
         buf[0] |= 0x04;
     }
-    hal.WriteRegister(SX126X_REG_IQ_CONFIG, buf[0], SX12XX_Radio_1);
+    hal.WriteRegister(RADIOLIB_SX126X_REG_IQ_CONFIG, buf[0], SX12XX_Radio_1);
     if (GPIO_PIN_NSS_2 != UNDEF_PIN)
     {
         buf[0] = hal.ReadRegister(RADIOLIB_SX126X_REG_IQ_CONFIG, SX12XX_Radio_2);
@@ -438,7 +438,7 @@ void SX126xDriver::SetPacketParamsLoRa(uint8_t PreambleLength, SX126x_RadioLoRaP
         } else {
             buf[0] |= 0x04;
         }
-        hal.WriteRegister(SX126X_REG_IQ_CONFIG, buf[0], SX12XX_Radio_2);
+        hal.WriteRegister(RADIOLIB_SX126X_REG_IQ_CONFIG, buf[0], SX12XX_Radio_2);
     }
 
     // FEI only triggers in Lora mode when the header is present :(
