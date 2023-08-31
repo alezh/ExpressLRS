@@ -99,13 +99,14 @@ bool SX126xDriver::Begin()
         syncWordMSB = hal.ReadRegister(RADIOLIB_SX126X_REG_LORA_SYNC_WORD_MSB, SX12XX_Radio_2);
         syncWordLSB = hal.ReadRegister(RADIOLIB_SX126X_REG_LORA_SYNC_WORD_LSB, SX12XX_Radio_2);
         loraSyncword = ((uint16_t)syncWordMSB << 8) | syncWordLSB;
-        DBGLN("Read Vers LLCC68 #2 loraSyncword (5156): %d", loraSyncword);
+        DBGLN("Read Vers SX126X #2 loraSyncword (5156): %d", loraSyncword);
         if (loraSyncword != 0x1424) {
             return false;
         }
     }
     //auto FS
     hal.WriteCommand(SX126X_RADIO_SET_RX_TX_FALLBACK_MODE, RADIOLIB_SX126X_RX_TX_FALLBACK_MODE_FS, SX12XX_Radio_All);
+
     hal.WriteRegister(RADIOLIB_SX126X_REG_RX_GAIN, 0x96, SX12XX_Radio_All);
     //set DIO2 as RF control switching
     //hal.WriteCommand(SX126x_RADIO_SET_DIO2_AS_RF_SWITCH_CTRL, 0x01, SX12XX_Radio_All);
@@ -140,7 +141,7 @@ void SX126xDriver::Config(uint8_t bw, uint8_t sf, uint8_t cr, uint32_t regfreq,
     IQinverted = InvertIQ;
     SetMode(SX126x_MODE_STDBY_RC, SX12XX_Radio_All);
     hal.WriteCommand(SX126x_RADIO_SET_PACKETTYPE, SX126x_PACKET_TYPE_LORA, SX12XX_Radio_All, 20);
-    DBGLN("Config LoRa ");
+    DBGLN("Config LoRa freq: %u", regfreq);
     SetFrequencyReg(regfreq);
     ConfigModParamsLoRa(bw, sf, cr);
 
@@ -154,37 +155,40 @@ void SX126xDriver::Config(uint8_t bw, uint8_t sf, uint8_t cr, uint32_t regfreq,
 
     uint8_t calFreq[2];
     uint32_t freq = regfreq * FREQ_STEP;
-    if (freq > 900000000)
-    {
-        calFreq[0] = 0xE1;
-        calFreq[1] = 0xE9;
-    }
-    else if (freq > 850000000)
-    {
-        calFreq[0] = 0xD7;
-        calFreq[1] = 0xDB;
-    }
-    else if (freq > 770000000)
-    {
-        calFreq[0] = 0xC1;
-        calFreq[1] = 0xC5;
-    }
-    else if (freq > 460000000)
-    {
-        calFreq[0] = 0x75;
-        calFreq[1] = 0x81;
-    }
-    else if (freq > 425000000)
-    {
-        calFreq[0] = 0x6B;
-        calFreq[1] = 0x6F;
-    }
+//    if (freq > 900000000)
+//    {
+//        calFreq[0] = 0xE1;
+//        calFreq[1] = 0xE9;
+//    }
+//    else if (freq > 850000000)
+//    {
+//        calFreq[0] = 0xD7;
+//        calFreq[1] = 0xDB;
+//    }
+//    else if (freq > 770000000)
+//    {
+//        calFreq[0] = 0xC1;
+//        calFreq[1] = 0xC5;
+//    }
+//    else if (freq > 460000000)
+//    {
+//        calFreq[0] = 0x75;
+//        calFreq[1] = 0x81;
+//    }
+//    else if (freq > 425000000)
+//    {
+//        calFreq[0] = 0x6B;
+//        calFreq[1] = 0x6F;
+//    }
+
+    // 900mhz
+    calFreq[0] = 0xE1;
+    calFreq[1] = 0xE9;
     hal.WriteCommand(SX126X_RADIO_SET_CALIBRATE_IMAGE, calFreq, sizeof(calFreq), SX12XX_Radio_All);
 
-//    uint8_t dio1Mask = SX126x_IRQ_TX_DONE | SX126x_IRQ_RX_DONE | SX126x_IRQ_RX_TX_TIMEOUT;
-    uint8_t dio1Mask = SX126x_IRQ_TX_DONE | SX126x_IRQ_RX_DONE;
-    uint8_t irqMask  = SX126x_IRQ_TX_DONE | SX126x_IRQ_RX_DONE | SX126x_IRQ_SYNCWORD_VALID | SX126x_IRQ_SYNCWORD_ERROR | SX126x_IRQ_CRC_ERROR;
-    SetDioIrqParams(irqMask, dio1Mask);
+    uint8_t dio1Mask = SX126x_IRQ_TX_DONE | SX126x_IRQ_RX_DONE | SX126x_IRQ_RX_TX_TIMEOUT;
+    uint8_t irqMask  = SX126x_IRQ_RADIO_ALL;
+    SetDioIrqParams(irqMask, dio1Mask, SX126x_IRQ_RADIO_NONE, SX126x_IRQ_RADIO_NONE);
 }
 
 void SX126xDriver::SetRxTimeoutUs(uint32_t interval)
@@ -277,10 +281,10 @@ void ICACHE_RAM_ATTR SX126xDriver::CommitOutputPower()
     }
 
     // PA Operating Modes with Optimal Settings
-    uint8_t paparams[4] = {paDutyCycle, hpMax, 0x00, 0x01};
-    hal.WriteCommand(SX126X_RADIO_SET_PA_CONFIG, paparams, sizeof(paparams), SX12XX_Radio_All, 25);
+    uint8_t paparams[4] = {0x04, 0x07, 0x00, 0x01};
+    hal.WriteCommand(SX126X_RADIO_SET_PA_CONFIG, paparams, sizeof(paparams), SX12XX_Radio_All);
 
-    uint8_t buf[2] = {pwrCurrent + pwrOffset, (uint8_t)SX126x_RADIO_RAMP_02_US};
+    uint8_t buf[2] = {pwrCurrent, (uint8_t)SX126x_RADIO_RAMP_02_US};
     hal.WriteCommand(SX126x_RADIO_SET_TXPARAMS, buf, sizeof(buf), SX12XX_Radio_All);
 }
 
@@ -403,32 +407,12 @@ void SX126xDriver::ConfigModParamsLoRa(uint8_t bw, uint8_t sf, uint8_t cr)
         reg = hal.ReadRegister(RADIOLIB_SX126X_REG_TX_CLAMP_CONFIG, SX12XX_Radio_2);
         hal.WriteRegister(RADIOLIB_SX126X_REG_TX_CLAMP_CONFIG, reg | 0x1E, SX12XX_Radio_2);
     }
-//    switch (sf)
-//    {
-//    case SX126x_LORA_SF5:
-//    case SX126x_LORA_SF6:
-//        hal.WriteRegister(SX126x_REG_SF_ADDITIONAL_CONFIG, 0x1E, SX12XX_Radio_All); // for SF5 or SF6
-//        break;
-//    case SX126x_LORA_SF7:
-//    case SX126x_LORA_SF8:
-//        hal.WriteRegister(SX126x_REG_SF_ADDITIONAL_CONFIG, 0x37, SX12XX_Radio_All); // for SF7 or SF8
-//        break;
-//    default:
-//        hal.WriteRegister(SX126x_REG_SF_ADDITIONAL_CONFIG, 0x32, SX12XX_Radio_All); // for SF9, SF10, SF11, SF12
-//    }
-    // Datasheet in LoRa Operation says "After SetModulationParams command:
-    // In all cases 0x1 must be written to the Frequency Error Compensation mode register 0x093C"
-    // However, this causes CRC errors for SF9 when using a high deviation TX (145kHz) and not using Explicit Header mode.
-    // The default register value (0x1b) seems most compatible, so don't mess with it
-    // InvertIQ=0 0x00=No reception 0x01=Poor reception w/o Explicit Header 0x02=OK 0x03=OK
-    // InvertIQ=1 0x00, 0x01, 0x02, and 0x03=Poor reception w/o Explicit Header
-    // hal.WriteRegister(SX126x_REG_FREQ_ERR_CORRECTION, 0x03, SX12XX_Radio_All);
 }
 
 void SX126xDriver::SetPacketParamsLoRa(uint8_t PreambleLength, SX126x_RadioLoRaPacketLengthsModes_t HeaderType,
                                        uint8_t PayloadLength, uint8_t InvertIQ)
 {
-    uint8_t buf[7];
+    uint8_t buf[6];
 
     buf[0] = 0x00; // Preamble MSB
     buf[1] = PreambleLength;
@@ -437,15 +421,25 @@ void SX126xDriver::SetPacketParamsLoRa(uint8_t PreambleLength, SX126x_RadioLoRaP
     buf[4] = SX126x_LORA_CRC_OFF;
     buf[5] = SX126x_LORA_IQ_NORMAL;
 
-//    buf[0] = PreambleLength;
-//    buf[1] = HeaderType;
-//    buf[2] = PayloadLength;
-//    buf[3] = SX126x_LORA_CRC_OFF;
-//    buf[4] = InvertIQ ? SX126x_LORA_IQ_INVERTED : SX126x_LORA_IQ_NORMAL;
-//    buf[5] = 0x00;
-//    buf[6] = 0x00;
-
     hal.WriteCommand(SX126x_RADIO_SET_PACKETPARAMS, buf, sizeof(buf), SX12XX_Radio_All, 20);
+
+    buf[0] = hal.ReadRegister(RADIOLIB_SX126X_REG_IQ_CONFIG, SX12XX_Radio_1);
+    if (InvertIQ) {
+        buf[0] &= ~0x04;
+    } else {
+        buf[0] |= 0x04;
+    }
+    hal.WriteRegister(SX126X_REG_IQ_CONFIG, buf[0], SX12XX_Radio_1);
+    if (GPIO_PIN_NSS_2 != UNDEF_PIN)
+    {
+        buf[0] = hal.ReadRegister(RADIOLIB_SX126X_REG_IQ_CONFIG, SX12XX_Radio_2);
+        if (InvertIQ) {
+            buf[0] &= ~0x04;
+        } else {
+            buf[0] |= 0x04;
+        }
+        hal.WriteRegister(SX126X_REG_IQ_CONFIG, buf[0], SX12XX_Radio_2);
+    }
 
     // FEI only triggers in Lora mode when the header is present :(
     modeSupportsFei = HeaderType == SX126x_LORA_PACKET_VARIABLE_LENGTH;

@@ -522,7 +522,7 @@ typedef enum
 typedef enum
 {
     SX126x_LORA_PACKET_VARIABLE_LENGTH = 0x00, //!< The packet is on variable size, header included
-    SX126x_LORA_PACKET_FIXED_LENGTH = 0x80,    //!< The packet is known on both sides, no header included in the packet
+    SX126x_LORA_PACKET_FIXED_LENGTH = 0x01,    //!< The packet is known on both sides, no header included in the packet
     SX126x_LORA_PACKET_EXPLICIT = SX126x_LORA_PACKET_VARIABLE_LENGTH,
     SX126x_LORA_PACKET_IMPLICIT = SX126x_LORA_PACKET_FIXED_LENGTH,
 } SX126x_RadioLoRaPacketLengthsModes_t;
