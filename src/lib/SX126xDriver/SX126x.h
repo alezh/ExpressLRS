@@ -45,8 +45,6 @@ public:
     uint8_t GetRxBufferAddr(SX12XX_Radio_Number_t radioNumber);
     int8_t GetRssiInst(SX12XX_Radio_Number_t radioNumber);
     void GetLastPacketStats();
-    SX12XX_Radio_Number_t GetProcessingPacketRadio() { return processingPacketRadio; }
-    SX12XX_Radio_Number_t GetLastSuccessfulPacketRadio() { return lastSuccessfulPacketRadio; }
 
 private:
     SX126x_RadioOperatingModes_t currOpmode;
