@@ -245,17 +245,17 @@ void ICACHE_RAM_ATTR SX126xDriver::CommitOutputPower()
 
     pwrCurrent = pwrPending;
     pwrPending = PWRPENDING_NONE;
-
 //    uint8_t pwrOffset = 0;
 //    uint8_t paDutyCycle = 0x04;
 //    uint8_t hpMax = 0x07;
 //
-//    if (pwrCurrent > 30) // power range -9 to -1.
-//    {
-//        pwrOffset = 8;
+    if (pwrCurrent > 30) // power range -9 to -1.
+    {
+        pwrCurrent = 10;
 //        paDutyCycle = 0x02;
 //        hpMax = 0x02;
-//    }
+    }
+    DBGLN("pwrCurrent: %u", pwrCurrent);
 //    else if (pwrCurrent > 20)
 //    {
 //        paDutyCycle = 0x04;
