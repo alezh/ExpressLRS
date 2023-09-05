@@ -61,3 +61,181 @@ For an exhaustive list of hardware targets and their user guides, check out the 
 If you are a developer and would like to contribute to the project, feel free to join the [discord](https://discord.gg/expresslrs) and chat about bugs and issues. You can also look for issues at the [GitHub Issue Tracker](https://github.com/ExpressLRS/ExpressLRS/issues). The best thing to do is to submit a Pull Request to the GitHub Repository. 
 
 ![](https://github.com/ExpressLRS/ExpressLRS-Hardware/blob/master/img/community.png?raw=true)
+
+```text
+Initialised devices
+Setting FCC915 Mode
+Number of FHSS frequencies = 40
+Sync channel = 21
+21 23 14 34 7 18 30 1 32 13 
+3 5 16 37 29 8 35 33 28 39 
+22 24 9 38 27 36 26 31 15 20 
+2 4 0 19 12 25 6 11 10 17 
+21 23 15 4 12 0 32 19 28 37 
+30 1 31 27 5 8 24 38 6 13 
+22 9 29 26 14 10 16 2 7 3 
+36 20 35 17 18 34 39 33 11 25 
+21 6 0 36 14 37 10 22 5 34 
+12 35 29 7 39 13 19 30 11 4 
+28 31 20 26 2 24 3 23 38 18 
+8 25 17 9 15 1 27 16 33 32 
+21 15 27 6 31 4 36 2 29 11 
+24 37 34 5 30 33 19 39 13 1 
+25 3 8 0 35 26 32 9 16 10 
+20 22 18 38 17 14 28 12 23 7 
+21 26 9 31 30 8 17 23 20 25 
+2 13 22 3 19 12 11 10 35 16 
+0 33 34 18 24 32 28 29 15 36 
+4 38 6 1 14 27 7 5 37 39 
+21 27 35 32 20 10 13 0 5 38 
+23 1 24 33 26 39 12 36 6 8 
+18 7 22 11 31 14 30 28 16 37 
+17 15 3 34 4 9 25 29 2 19 
+
+ExpressLRS TX Module Booted...
+Config version 7
+Hal Init
+SX126x Reset
+SX126x Ready!
+SX126x Begin
+RFAMP_hal Init
+Use TX pin: 12
+Use RX pin: 13
+Read Vers sx126x #1 loraSyncword (5156): 5156
+SetPower: 247
+pwrCurrent: 10
+SetPower: 0
+set rate 0
+Config LoRa freq: 951566587
+freq: 907484614 hz
+Adjusted max packet size 64-72
+hwTimer Init
+About to start CRSF task...$X
+<ding get backpack version command
+$X<ding get backpack version command
+Too many bad UART RX packets!
+UART WDT: Switch to: 400000 baud
+Adjusted max packet size 64-64
+UART STATS Bad:Good = 0:0
+$X<ding get backpack version command
+Too many bad UART RX packets!
+autobaud: low 19, high 19
+UART WDT: Switch to: 3750000 baud
+Adjusted max packet size 64-88
+UART STATS Bad:Good = 0:0
+CRSF UART Connected
+hwTimer resume
+pwrCurrent: 0
+UART STATS Bad:Good = 0:64
+$X<ding get backpack version command
+UART STATS Bad:Good = 0:250
+$X<ding get backpack version command
+UART STATS Bad:Good = 0:250
+$X<ding get backpack version command
+UART STATS Bad:Good = 0:250
+$X<ding get backpack version command
+UART STATS Bad:Good = 0:250
+$X<ding get backpack version command
+UART STATS Bad:Good = 0:250
+$X<ding get backpack version command
+UART STATS Bad:Good = 0:250
+$X<ding get backpack version command
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:249
+UART STATS Bad:Good = 0:251
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:249
+UART STATS Bad:Good = 0:251
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+Set Lua [Bind]=1
+hwTimer stop
+set rate 3
+hwTimer interval: 20000
+Config LoRa freq: 951566587
+freq: 907484614 hz
+Adjusted max packet size 64-128
+hwTimer resume
+Entered binding mode at freq = 951566587
+$X<     et rate 0
+hwTimer interval: 4000
+Config LoRa freq: 951566587
+freq: 907484614 hz
+Adjusted max packet size 64-88
+Exiting binding mode
+UART STATS Bad:Good = 0:190
+UART STATS Bad:Good = 0:250
+Set Lua [Bind]=6
+UART STATS Bad:Good = 0:249
+UART STATS Bad:Good = 0:251
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+UART STATS Bad:Good = 0:250
+Set Lua [Bind]=1
+hwTimer stop
+```
