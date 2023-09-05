@@ -155,6 +155,7 @@ void SX126xDriver::Config(uint8_t bw, uint8_t sf, uint8_t cr, uint32_t regfreq,
 
     uint8_t calFreq[2];
     uint32_t freq = regfreq * FREQ_STEP;
+    DBGLN("freq: %u hz", freq)
 //    if (freq > 900000000)
 //    {
 //        calFreq[0] = 0xE1;
