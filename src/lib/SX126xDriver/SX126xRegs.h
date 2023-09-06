@@ -4,8 +4,8 @@
 
 /* Register defines borrowed from the RadioLib project: */
 /* RadioLib/src/modules/SX126x/SX126x.h                 */
-#define SX126X_POWER_MIN (-9)
-#define SX126X_POWER_MAX (22)
+#define SX126X_POWER_MIN                               -9
+#define SX126X_POWER_MAX                               22
 
 // SX126X physical layer properties
 #define RADIOLIB_SX126X_FREQUENCY_STEP_SIZE                    0.9536743164

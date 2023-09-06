@@ -69,6 +69,7 @@ void SX126xHal::init()
     }
 
 #ifdef PLATFORM_ESP32
+    DBGLN("PLATFORM_ESP32");
     SPI.begin(GPIO_PIN_SCK, GPIO_PIN_MISO, GPIO_PIN_MOSI, GPIO_PIN_NSS); // sck, miso, mosi, ss (ss can be any GPIO)
     gpio_pullup_en((gpio_num_t)GPIO_PIN_MISO);
     SPI.setFrequency(10000000);
