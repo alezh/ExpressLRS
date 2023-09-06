@@ -136,7 +136,8 @@ void SX126xDriver::Config(uint8_t bw, uint8_t sf, uint8_t cr, uint32_t regfreq,
     // config PACKET_TYPE_LORA
     hal.WriteCommand(SX126x_RADIO_SET_PACKETTYPE, (uint8_t)SX126x_PACKET_TYPE_LORA, SX12XX_Radio_All, 20);
     // as per section 15.2: Better Resistance of the LLCC68 Tx to Antenna Mismatch
-    reg = hal.ReadRegister(RADIOLIB_SX126X_REG_TX_CLAMP_CONFIG, SX12XX_Radio_1);
+
+    uint8_t reg = hal.ReadRegister(RADIOLIB_SX126X_REG_TX_CLAMP_CONFIG, SX12XX_Radio_1);
     hal.WriteRegister(RADIOLIB_SX126X_REG_TX_CLAMP_CONFIG, reg | 0x1E, SX12XX_Radio_1);
     if (GPIO_PIN_NSS_2 != UNDEF_PIN)
     {
