@@ -513,10 +513,13 @@ void ICACHE_RAM_ATTR SX126xDriver::TXnb(uint8_t * data, uint8_t size, SX12XX_Rad
     DBGLN("TXnb!");
     if (currOpmode == SX126x_MODE_TX) //catch TX timeout
     {
-        DBGLN("catch TX Timeout!");
+        DBGLN("catch TX Timeout1");
         SetMode(SX126x_MODE_FS, SX12XX_Radio_All);
+        DBGLN("catch TX Timeout2");
         ClearIrqStatus(SX126x_IRQ_RADIO_ALL, SX12XX_Radio_All);
+        DBGLN("catch TX Timeout3");
         TXnbISR();
+        DBGLN("catch TX Timeout4");
         return;
     }
     if (radioNumber == SX12XX_Radio_NONE)
