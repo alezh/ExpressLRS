@@ -103,11 +103,16 @@ void SX126xHal::init()
 
 void ICACHE_RAM_ATTR SX126xHal::setNss(uint8_t radioNumber, bool state)
 {
+    DBGLN("SX126x setNss radioNumber %u ", radioNumber);
     #if defined(PLATFORM_ESP32)
     spiDisableSSPins(SPI.bus(), ~radioNumber);
     spiEnableSSPins(SPI.bus(), radioNumber);
     #else
-    if (radioNumber & SX12XX_Radio_1) digitalWrite(GPIO_PIN_NSS, state);
+    if (radioNumber & SX12XX_Radio_1)
+    {
+        DBGLN("SX126x if setNss radioNumber %u ", radioNumber);
+        digitalWrite(GPIO_PIN_NSS, state);
+    }
     if (GPIO_PIN_NSS_2 != UNDEF_PIN && radioNumber & SX12XX_Radio_2) digitalWrite(GPIO_PIN_NSS_2, state);
     #endif
 }
