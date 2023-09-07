@@ -266,9 +266,6 @@ void ICACHE_RAM_ATTR SX126xDriver::CommitOutputPower()
         pwrCurrent = 22;
     }
     DBGLN("pwrCurrent: %u", pwrCurrent);
-    // PA Operating Modes with Optimal Settings
-    uint8_t paparams[4] = {0x04, 0x07, 0x00, 0x01};
-    hal.WriteCommand(SX126X_RADIO_SET_PA_CONFIG, paparams, sizeof(paparams), SX12XX_Radio_All);
 
     uint8_t buf[2] = {pwrCurrent, (uint8_t)SX126x_RADIO_RAMP_02_US};
     hal.WriteCommand(SX126x_RADIO_SET_TXPARAMS, buf, sizeof(buf), SX12XX_Radio_All);
@@ -362,6 +359,10 @@ void SX126xDriver::ConfigModParamsLoRa(uint8_t bw, uint8_t sf, uint8_t cr)
     // Rx Boosted gain : 0x96
     hal.WriteRegister(RADIOLIB_SX126X_REG_RX_GAIN, 0x96, SX12XX_Radio_All);
     hal.WriteRegister(RADIOLIB_SX126X_REG_OCP_CONFIGURATION,0x38, SX12XX_Radio_All);
+
+    // PA Operating Modes with Optimal Settings
+    uint8_t paparams[4] = {0x04, 0x07, 0x00, 0x01};
+    hal.WriteCommand(SX126X_RADIO_SET_PA_CONFIG, paparams, sizeof(paparams), SX12XX_Radio_All);
 
     CommitOutputPower();
 
