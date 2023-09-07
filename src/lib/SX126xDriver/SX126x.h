@@ -67,7 +67,7 @@ private:
                          uint16_t dio1Mask=SX126x_IRQ_RADIO_NONE,
                          uint16_t dio2Mask=SX126x_IRQ_RADIO_NONE,
                          uint16_t dio3Mask=SX126x_IRQ_RADIO_NONE);
-
+    void SetDio3AsTcxoControl(uint8_t OutputVoltage, uint32_t delay_us);
     static void IsrCallback_1();
     static void IsrCallback_2();
     static void IsrCallback(SX12XX_Radio_Number_t radioNumber);
