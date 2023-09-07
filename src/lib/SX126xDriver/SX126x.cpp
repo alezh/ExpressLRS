@@ -415,22 +415,20 @@ void SX126xDriver::SetPacketParamsLoRa(uint8_t PreambleLength, SX126x_RadioLoRaP
     // FEI only triggers in Lora mode when the header is present :(
     modeSupportsFei = HeaderType == SX126x_LORA_PACKET_VARIABLE_LENGTH;
 
-//    uint8_t tmo_symbnum = (PayloadLength * 3) >> 2;
-//    uint8_t mant = (((tmo_symbnum > 248) ? 248 : tmo_symbnum) + 1) >> 1;
-//    uint8_t exp  = 0;
-//    uint8_t reg  = 0;
-//    while (mant > 31) {
-//        mant = ( mant + 3 ) >> 2;
-//        exp++;
-//    }
-//    reg = mant << (2 * exp + 1);
-//
-//    hal.WriteCommand(0x0A, reg);
-//
-//    if (tmo_symbnum != 0) {
-//        reg = exp + (mant << 3);
-//        WriteRegister(0x0706, reg);
-//    }
+    uint8_t tmo_symbnum = (PayloadLength * 3) >> 2;
+    uint8_t mant = (((tmo_symbnum > 248) ? 248 : tmo_symbnum) + 1) >> 1;
+    uint8_t exp  = 0;
+    uint8_t reg  = 0;
+    while (mant > 31) {
+        mant = ( mant + 3 ) >> 2;
+        exp++;
+    }
+    reg = mant << (2 * exp + 1);
+    hal.WriteCommand(SX126X_RADIO_SET_LORA_SYMB_NUM_TIMEOUT, reg, SX12XX_Radio_All);
+    if (tmo_symbnum != 0) {
+        reg = exp + (mant << 3);
+        hal.WriteRegister(0x0706, reg, SX12XX_Radio_All);
+    }
 }
 
 void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyHz(uint32_t freq, SX12XX_Radio_Number_t radioNumber)
