@@ -84,8 +84,8 @@ bool SX126xDriver::Begin()
     DBGLN("SX126x Begin MODE STDBY RC");
     SetMode(SX126x_MODE_STDBY_RC, SX12XX_Radio_All); // Put in STDBY_RC mode.  Must be SX126x_MODE_STDBY_RC for SX126x_RADIO_SET_REGULATORMODE to be set.
 
-    uint8_t syncWordMSB = hal.ReadRegister(0x0740, SX12XX_Radio_1);
-    uint8_t syncWordLSB = hal.ReadRegister(0x0741, SX12XX_Radio_1);
+    uint8_t syncWordMSB = hal.ReadRegister(RADIOLIB_SX126X_REG_LORA_SYNC_WORD_MSB, SX12XX_Radio_1);
+    uint8_t syncWordLSB = hal.ReadRegister(RADIOLIB_SX126X_REG_LORA_SYNC_WORD_LSB, SX12XX_Radio_1);
     uint16_t loraSyncword = ((uint16_t)syncWordMSB << 8) | syncWordLSB;
     DBGLN("Read Vers sx126x #1 loraSyncword (5156): %d", loraSyncword);
     if (loraSyncword != 0x1424) {
@@ -153,8 +153,8 @@ void SX126xDriver::Config(uint8_t bw, uint8_t sf, uint8_t cr, uint32_t regfreq,
         hal.WriteCommand(SX126X_RADIO_CLEAR_DEVICE_ERRORS, buf, 2, SX12XX_Radio_2);
     }
     // set DIO3 as TCXO control
-    osc_configuration = RADIOLIB_SX126X_DIO3_OUTPUT_1_8;
-    SetDio3AsTcxoControl(osc_configuration, 250);
+//    osc_configuration = RADIOLIB_SX126X_DIO3_OUTPUT_1_8;
+//    SetDio3AsTcxoControl(osc_configuration, 250);
 
     DBGLN("Config LoRa freq: %u", regfreq);
     SetFrequencyReg(regfreq);
@@ -454,12 +454,13 @@ void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyHz(uint32_t freq, SX12XX_Radio_Nu
 
 void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyReg(uint32_t regfreq, SX12XX_Radio_Number_t radioNumber)
 {
+    DBGLN("SetFrequencyReg : %u", regfreq);
     WORD_ALIGNED_ATTR uint8_t buf[4] = {0};
 
-    buf[0] = (uint8_t)((regfreq >> 24) & 0xFF);
-    buf[1] = (uint8_t)((regfreq >> 16) & 0xFF);
-    buf[2] = (uint8_t)((regfreq >> 8) & 0xFF);
-    buf[3] = (uint8_t)(regfreq & 0xFF);
+    buf[0] = (uint8_t)((regfreq >> 24) & 0xFF000000);
+    buf[1] = (uint8_t)((regfreq >> 16) & 0x00FF0000);
+    buf[2] = (uint8_t)((regfreq >> 8) & 0x0000FF00);
+    buf[3] = (uint8_t)(regfreq & 0x000000FF);
 
     hal.WriteCommand(SX126x_RADIO_SET_RFFREQUENCY, buf, sizeof(buf), radioNumber);
 
@@ -479,13 +480,13 @@ void SX126xDriver::SetDioIrqParams(uint16_t irqMask, uint16_t dio1Mask, uint16_t
 {
     uint8_t buf[8];
 
-    buf[0] = (uint8_t)((irqMask >> 8) & 0x00FF);
+    buf[0] = (uint8_t)((irqMask >> 8) & 0xFF00);
     buf[1] = (uint8_t)(irqMask & 0x00FF);
-    buf[2] = (uint8_t)((dio1Mask >> 8) & 0x00FF);
+    buf[2] = (uint8_t)((dio1Mask >> 8) & 0xFF00);
     buf[3] = (uint8_t)(dio1Mask & 0x00FF);
-    buf[4] = (uint8_t)((dio2Mask >> 8) & 0x00FF);
+    buf[4] = (uint8_t)((dio2Mask >> 8) & 0xFF00);
     buf[5] = (uint8_t)(dio2Mask & 0x00FF);
-    buf[6] = (uint8_t)((dio3Mask >> 8) & 0x00FF);
+    buf[6] = (uint8_t)((dio3Mask >> 8) & 0xFF00);
     buf[7] = (uint8_t)(dio3Mask & 0x00FF);
 
     hal.WriteCommand(SX126x_RADIO_SET_DIOIRQPARAMS, buf, sizeof(buf), SX12XX_Radio_All);
@@ -648,8 +649,8 @@ void ICACHE_RAM_ATTR SX126xDriver::GetLastPacketStats()
     LastPacketSNRRaw = (int8_t)status[1];
     // https://www.mouser.com/datasheet/2/761/DS_SX126x-1_V2.2-1511144.pdf p84
     // need to subtract SNR from RSSI when SNR <= 0;
-    int8_t negOffset = (LastPacketSNRRaw < 0) ? (LastPacketSNRRaw / RADIO_SNR_SCALE) : 0;
-    LastPacketRSSI += negOffset;
+//    int8_t negOffset = (LastPacketSNRRaw < 0) ? (LastPacketSNRRaw / RADIO_SNR_SCALE) : 0;
+//    LastPacketRSSI += negOffset;
 }
 
 void ICACHE_RAM_ATTR SX126xDriver::IsrCallback_1()
@@ -668,7 +669,13 @@ void ICACHE_RAM_ATTR SX126xDriver::IsrCallback(SX12XX_Radio_Number_t radioNumber
     SX12XX_Radio_Number_t irqClearRadio = radioNumber;
 
     uint16_t irqStatus = instance->GetIrqStatus(radioNumber);
+    DBGLN("IsrCallback %x", irqStatus);
 
+    if (irqStatus & SX126x_IRQ_RX_TX_TIMEOUT){
+        instance->ClearIrqStatus(SX126x_IRQ_RADIO_ALL, irqClearRadio);
+        instance->SetMode(LLCC68_MODE_FS, radioNumber); // Returns automatically to STBY_RC mode on timer end-of-count.  Setting FS will be needed for Gemini Tx mode, and to minimise jitter.
+        return;
+    }
     if (irqStatus & SX126x_IRQ_TX_DONE)
     {
         RFAMP.TXRXdisable();
