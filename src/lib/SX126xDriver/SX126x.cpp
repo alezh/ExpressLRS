@@ -673,7 +673,7 @@ void ICACHE_RAM_ATTR SX126xDriver::IsrCallback(SX12XX_Radio_Number_t radioNumber
 
     if (irqStatus & SX126x_IRQ_RX_TX_TIMEOUT){
         instance->ClearIrqStatus(SX126x_IRQ_RADIO_ALL, irqClearRadio);
-        instance->SetMode(LLCC68_MODE_FS, radioNumber); // Returns automatically to STBY_RC mode on timer end-of-count.  Setting FS will be needed for Gemini Tx mode, and to minimise jitter.
+        instance->SetMode(SX126x_MODE_FS, radioNumber); // Returns automatically to STBY_RC mode on timer end-of-count.  Setting FS will be needed for Gemini Tx mode, and to minimise jitter.
         return;
     }
     if (irqStatus & SX126x_IRQ_TX_DONE)
