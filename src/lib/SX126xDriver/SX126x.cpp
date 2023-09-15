@@ -153,7 +153,7 @@ void SX126xDriver::Config(uint8_t bw, uint8_t sf, uint8_t cr, uint32_t regfreq,
         hal.WriteCommand(SX126X_RADIO_CLEAR_DEVICE_ERRORS, buf, 2, SX12XX_Radio_2);
     }
     // set DIO3 as TCXO control
-    osc_configuration = RADIOLIB_SX126X_DIO3_OUTPUT_3_3;
+    osc_configuration = RADIOLIB_SX126X_DIO3_OUTPUT_1_8;
     SetDio3AsTcxoControl(osc_configuration, 250);
 
     DBGLN("Config LoRa freq: %u", regfreq);
