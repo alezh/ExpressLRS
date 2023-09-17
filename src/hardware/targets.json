@@ -121,7 +121,7 @@
             "micro": {
                 "product_name": "Alz SX126X 900MHz RX",
                 "lua_name": "Alz900RX SX126x",
-                "layout_file": "Generic 900 SX162X.json",
+                "layout_file": "Alz 900 SX126X.json",
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp8285",
                 "firmware": "Unified_ESP8285_900_RX_SX126X",
