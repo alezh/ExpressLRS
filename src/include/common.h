@@ -2,8 +2,9 @@
 
 #ifndef UNIT_TEST
 #include "targets.h"
-
-#if defined(RADIO_SX127X)
+#if defined(RADIO_SX126X)
+#include "SX126xDriver.h"
+#elif defined(RADIO_SX127X)
 #include "SX127xDriver.h"
 #elif defined(RADIO_SX128X)
 #include "SX1280Driver.h"
@@ -197,7 +198,10 @@ enum eFailsafeMode : uint8_t
 };
 
 #ifndef UNIT_TEST
-#if defined(RADIO_SX127X)
+#if defined(RADIO_SX126X)
+#define RATE_MAX 8
+#define RATE_BINDING RATE_LORA_50HZ
+#elif defined(RADIO_SX127X)
 #define RATE_MAX 6
 #define RATE_BINDING RATE_LORA_50HZ
 

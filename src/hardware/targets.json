@@ -43,7 +43,6 @@
                 "product_name": "AXIS Thor 2.4GHz TX",
                 "lua_name": "AXIS THOR 2400TX",
                 "layout_file": "AXIS Thor 2400.json",
-                "logo_file": "axis_tft.bin",
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_2400_TX",
@@ -80,29 +79,7 @@
             "nano": {
                 "product_name": "Alz 2.4GHz Nano RX",
                 "lua_name": "Alz Nano2G4RX",
-                "layout_file": "Generic 2400 PA.json",
-                "overlay": {
-                    "radio_dcdc": true
-                },
-                "upload_methods": ["uart", "wifi", "betaflight"],
-                "platform": "esp8285",
-                "firmware": "Unified_ESP8285_2400_RX"
-            },
-            "max-nano": {
-                "product_name": "Alz 2.4GHz Nano RX MAX",
-                "lua_name": "Alz Nano2G4RXMax",
-                "layout_file": "Generic 2400 PA MAX.json",
-                "overlay": {
-                    "radio_dcdc": true
-                },
-                "upload_methods": ["uart", "wifi", "betaflight"],
-                "platform": "esp8285",
-                "firmware": "Unified_ESP8285_2400_RX"
-            },
-            "pa-rgb": {
-                "product_name": "Alz 2.4Ghz RX RGB",
-                "lua_name": "Alz 2G4RXMaxRGB",
-                "layout_file": "Generic 2400 PA MAX RGB.json",
+                "layout_file": "Alz 2400.json",
                 "overlay": {
                     "radio_dcdc": true
                 },
@@ -114,12 +91,22 @@
         "tx_900": {
             "micro900": {
                 "product_name": "Alz 900MHz TX",
-                "lua_name": "Alz 900 Tx 1W",
+                "lua_name": "Alz 900Tx 1W",
                 "layout_file": "Alz 900.json",
                 "features": ["fan"],
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_900_TX"
+            },
+            "new900": {
+                "product_name": "Alz SX126X 900MHz TX",
+                "lua_name": "Alz 900 SX126x1W",
+                "layout_file": "Alz 900 SX126X.json",
+                "features": ["fan"],
+                "upload_methods": ["uart", "wifi"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_900_TX_SX126X",
+                "prior_target_name": "ALZ_900_TX_SX126X_1000MW"
             }
         },
         "rx_900": {
@@ -131,13 +118,14 @@
                 "platform": "esp8285",
                 "firmware": "Unified_ESP8285_900_RX"
             },
-            "nano": {
-                "product_name": "Alz 900MHz Nano RX",
-                "lua_name": "Alz Nano900RX",
-                "layout_file": "Generic 900 PA RGB.json",
+            "micro": {
+                "product_name": "Alz SX126X 900MHz RX",
+                "lua_name": "Alz900RX SX126x",
+                "layout_file": "Generic 900 SX162X.json",
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp8285",
-                "firmware": "Unified_ESP8285_900_RX"
+                "firmware": "Unified_ESP8285_900_RX_SX126X",
+                "prior_target_name": "ALZ_900_RX_SX126X"
             }
         }
     },
@@ -157,7 +145,6 @@
                 "product_name": "BETAFPV 900MHz Micro TX",
                 "lua_name": "BETAFPV 900Micro",
                 "layout_file": "BETAFPV 900 Micro.json",
-                "logo_file": "betafpv.bin",
                 "features": ["fan"],
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
@@ -212,7 +199,6 @@
                 "product_name": "BETAFPV 2.4GHz Micro TX",
                 "lua_name": "BETAFPV2G4Micro",
                 "layout_file": "BETAFPV 2400 Micro.json",
-                "logo_file": "betafpv.bin",
                 "features": ["fan"],
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
@@ -223,7 +209,6 @@
                 "product_name": "BETAFPV 2.4GHz 1W Micro TX",
                 "lua_name": "BFPV 2G4Micro1W",
                 "layout_file": "BETAFPV 2400 Micro 1W.json",
-                "logo_file": "betafpv.bin",
                 "features": ["fan"],
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
@@ -315,7 +300,6 @@
                 "product_name": "DIY TTGO V1 900MHz TX",
                 "lua_name": "DIY900 TTGO V1",
                 "layout_file": "DIY 900 TTGO V1.json",
-                "logo_file": "elrs64.bin",
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_900_TX",
@@ -325,7 +309,6 @@
                 "product_name": "DIY TTGO V2 900MHz TX",
                 "lua_name": "DIY900 TTGO V2",
                 "layout_file": "DIY 900 TTGO V2.json",
-                "logo_file": "elrs64.bin",
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_900_TX",
@@ -449,7 +432,6 @@
                 "product_name": "EMAX OLED 900MHz TX",
                 "lua_name": "EMAX 900TX",
                 "layout_file": "EMAX 900 OLED.json",
-                "logo_file": "emax.bin",
                 "features": ["fan"],
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
@@ -483,7 +465,6 @@
                 "product_name": "EMAX OLED 2.4GHz TX",
                 "lua_name": "EMAX 2400TX",
                 "layout_file": "EMAX 2400 OLED.json",
-                "logo_file": "emax.bin",
                 "features": ["fan"],
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
@@ -1362,7 +1343,6 @@
                 "product_name": "Jumper AION Nano 2.4GHz TX",
                 "lua_name": "AION 2G4NANO TX",
                 "layout_file": "Jumper AION Nano.json",
-                "logo_file": "jumper.bin",
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_2400_TX",
@@ -1470,7 +1450,6 @@
                 "product_name": "NamimnoRC Voyager OLED 900MHz TX",
                 "lua_name": "NM Voyager OLED",
                 "layout_file": "Namimno Voyager OLED.json",
-                "logo_file": "namimno.bin",
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_900_TX",
@@ -1516,7 +1495,6 @@
                 "product_name": "NamimnoRC Flash OLED 2.4GHz TX",
                 "lua_name": "NM Flash OLED",
                 "layout_file": "Namimno Flash OLED.json",
-                "logo_file": "namimno.bin",
                 "features": ["fan"],
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
@@ -1652,7 +1630,6 @@
                 "product_name": "RadioMaster Ranger 2.4GHz TX",
                 "lua_name": "RM Ranger",
                 "layout_file": "Radiomaster Ranger.json",
-                "logo_file": "radiomaster.bin",
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_2400_TX",

@@ -2,7 +2,7 @@
     "serial_rx": 2,
     "serial_tx": 2,
 
-    "radio_dio0": 26,
+    "radio_busy": 26,
     "radio_dio1": 25,
     "radio_miso": 19,
     "radio_mosi": 23,
@@ -16,18 +16,18 @@
     "power_txen": 12,
 
     "power_min": 2,
-    "power_high": 4,
+    "power_high": 6,
     "power_max": 6,
     "power_default": 2,
     "power_control": 0,
-    "power_values": [2,5,8,12,15],
+    "power_values": [0,10,14,17,22],
 
     "led_rgb": 15,
     "led_rgb_isgrb": true,
 
     "joystick": 35,
     "joystick_values": [1365, 3276, 2048, 2730, 0, 4095],
-
+    "radio_dcdc": true,
     "screen_cs": 16,
     "screen_dc": 4,
     "screen_mosi": 32,

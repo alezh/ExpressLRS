@@ -3,7 +3,7 @@
 #include "targets.h"
 #include "random.h"
 
-#if defined(RADIO_SX127X)
+#if defined(RADIO_SX127X) || defined(RADIO_SX126X)
 #define FreqCorrectionMax ((int32_t)(100000/FREQ_STEP))
 #elif defined(RADIO_SX128X)
 #define FreqCorrectionMax ((int32_t)(200000/FREQ_STEP))
@@ -78,7 +78,7 @@ static inline const char *getRegulatoryDomain()
 static inline uint32_t FHSSGeminiFreq(uint8_t FHSSsequenceIdx)
 {
     uint32_t numfhss = FHSSgetChannelCount();
-    uint8_t offSetIdx = (FHSSsequenceIdx + (numfhss / 2)) % numfhss;  
+    uint8_t offSetIdx = (FHSSsequenceIdx + (numfhss / 2)) % numfhss;
     uint32_t freq = FHSSconfig->freq_start + (freq_spread * offSetIdx / FREQ_SPREAD_SCALE) - FreqCorrection_2;
     return freq;
 }
