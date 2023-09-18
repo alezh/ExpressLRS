@@ -73,6 +73,15 @@
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_2400_TX",
                 "prior_target_name": "Alz_2400_TX_MICRO_1000mw"
+            },
+            "gemini": {
+                "product_name": "Alz 2.4Ghz Gemini TX",
+                "lua_name": "Alz Gemini2G4TX",
+                "layout_file": "Alz 2400 Gemini.json",
+                "upload_methods": ["uart", "wifi", "etx"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_2400_TX",
+                "prior_target_name": "Alz_2400_TX_GEMINI"
             }
         },
         "rx_2400": {
@@ -85,7 +94,17 @@
                 },
                 "upload_methods": ["uart", "wifi", "betaflight"],
                 "platform": "esp8285",
-                "firmware": "Unified_ESP8285_2400_RX"
+                "firmware": "Unified_ESP8285_2400_RX",
+                "prior_target_name": "Alz_Nano_2400_RX"
+            },
+            "diversity": {
+                "product_name": "Alz True Diversity PA 2.4Ghz RX",
+                "lua_name": "Gemini 2G4RX",
+                "layout_file": "Generic 2400 True Diversity PA.json",
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_2400_RX",
+                "prior_target_name": "Alz_SuperD_2400_RX"
             }
         },
         "tx_900": {
@@ -107,6 +126,15 @@
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_900_TX_SX126X",
                 "prior_target_name": "ALZ_900_TX_SX126X_1000MW"
+            },
+            "gemini": {
+                "product_name": "Alz 900MHz Gemini TX",
+                "lua_name": "Gemini 900TX",
+                "layout_file": "Generic 900 Gemini.json",
+                "upload_methods": ["uart", "wifi", "etx"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_900_TX",
+                "prior_target_name": "Unified_ESP32_900_TX"
             }
         },
         "rx_900": {
@@ -126,6 +154,14 @@
                 "platform": "esp8285",
                 "firmware": "Unified_ESP8285_900_RX_SX126X",
                 "prior_target_name": "ALZ_900_RX_SX126X"
+            },
+            "diversity": {
+                "product_name": "Alz True Diversity PA 900MHz RX",
+                "lua_name": "Gemini 900RX",
+                "layout_file": "Generic 900 True Diversity PA.json",
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_900_RX"
             }
         }
     },
