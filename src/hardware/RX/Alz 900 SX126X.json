@@ -12,7 +12,7 @@
 
     "power_rxen": 9,
     "power_txen": 10,
-
+    "radio_dcdc": true,
     "power_min": 0,
     "power_high": 2,
     "power_max": 3,
