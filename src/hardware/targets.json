@@ -152,6 +152,17 @@
                 "platform": "esp32",
                 "firmware": "Unified_ESP32_900_TX_SX126X",
                 "prior_target_name": "ALZ_900_TX_SX126X_1000MW"
+            },
+            "stm32-sx1272": {
+                "product_name": "Alz SX126X 900MHz STM32 TX",
+                "upload_methods": ["stlink"],
+                "platform": "stm32",
+                "firmware": "DIY_900_TX_STM32_SX1272",
+                "stlink": {
+                    "cpus": ["STM32F103C8T6", "STM32F103CBT6"],
+                    "offset": "0x4000",
+                    "bootloader": "sx1272_pcb_bootloader.bin"
+                }
             }
         },
         "rx_900": {

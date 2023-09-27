@@ -272,7 +272,7 @@ void ICACHE_RAM_ATTR SX126xDriver::CommitOutputPower()
         paDutyCycle = 0x02;
         hpMax = 0x02;
     }
-    DBGLN("pwrCurrent: %u", pwrCurrent);
+    DBGLN("pwrCurrent: %u  pwrOffset: %u", pwrCurrent, pwrOffset);
     // PA Operating Modes with Optimal Settings
     uint8_t paparams[4] = {paDutyCycle, hpMax, 0x00, 0x01};
     hal.WriteCommand(SX126x_RADIO_SET_PACONFIG, paparams, sizeof(paparams), SX12XX_Radio_All, 25);
