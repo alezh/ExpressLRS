@@ -153,7 +153,7 @@
                 "firmware": "Unified_ESP32_900_TX_SX126X",
                 "prior_target_name": "ALZ_900_TX_SX126X_1000MW"
             },
-            "stm32-sx1272": {
+            "stm32-sx1262": {
                 "product_name": "Alz SX126X 900MHz STM32 TX",
                 "upload_methods": ["stlink"],
                 "platform": "stm32",
