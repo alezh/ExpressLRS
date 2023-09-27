@@ -157,7 +157,7 @@
                 "product_name": "Alz SX126X 900MHz STM32 TX",
                 "upload_methods": ["stlink"],
                 "platform": "stm32",
-                "firmware": "DIY_900_TX_STM32_SX1272",
+                "firmware": "ALZ_900_TX_STM32_SX1262",
                 "stlink": {
                     "cpus": ["STM32F103C8T6", "STM32F103CBT6"],
                     "offset": "0x4000",
