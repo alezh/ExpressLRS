@@ -24,6 +24,14 @@ static uint32_t endTX;
     #define OPT_USE_SX126x_DCDC false
 #endif
 
+#ifdef USE_SX126x_TCXO
+    #ifndef OPT_USE_SX126x_TCXO
+        #define OPT_USE_SX126x_TCXO true
+    #endif
+#else
+    #define OPT_USE_SX126x_TCXO false
+#endif
+
 SX126xDriver::SX126xDriver(): SX12xxDriverCommon()
 {
     instance = this;
@@ -81,8 +89,15 @@ bool SX126xDriver::Begin()
     hal.WriteCommand(SX126x_RADIO_SET_RXTXFALLBACKMODE, SX126x_RX_RXTXFALLBACKMODE_FS, SX12XX_Radio_All);
     hal.WriteRegister(SX126x_RADIO_RX_GAIN, SX126x_RX_BOOSTED_GAIN, SX12XX_Radio_All);   //default is low power mode, switch to high sensitivity instead
     hal.WriteCommand(SX126x_RADIO_SET_DIO2ASSWITCHCTRL, SX126x_DIO2ASSWITCHCTRL_ON, SX12XX_Radio_All);
+
     osc_configuration = RADIOLIB_SX126x_DIO3_OUTPUT_1_8;
-    SetDio3AsTcxoControl(osc_configuration, 250);
+
+#if defined(USE_SX126x_TCXO)
+    if (OPT_USE_SX126x_TCXO)
+    {
+        SetDio3AsTcxoControl(osc_configuration, 250);
+    }
+#endif
     // Force the next power update, and the lowest power
     pwrCurrent = PWRPENDING_NONE;
     SetOutputPower(SX126x_POWER_MIN);

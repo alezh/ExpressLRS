@@ -40,6 +40,7 @@ static const struct {
     {HARDWARE_radio_rst_2, "radio_rst_2", INT},
     {HARDWARE_radio_sck, "radio_sck", INT},
     {HARDWARE_radio_dcdc, "radio_dcdc", BOOL},
+    {HARDWARE_radio_tcxo, "radio_tcxo", BOOL},
     {HARDWARE_radio_rfo_hf, "radio_rfo_hf", BOOL},
     {HARDWARE_ant_ctrl, "ant_ctrl", INT},
     {HARDWARE_ant_ctrl_compl, "ant_ctrl_compl", INT},
