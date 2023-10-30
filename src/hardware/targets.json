@@ -100,6 +100,18 @@
                 "firmware": "Unified_ESP8285_2400_RX",
                 "prior_target_name": "Alz_Nano_2400_RX"
             },
+            "sd24g": {
+                "product_name": "Alz True Diversity PA 2.4Ghz RX",
+                "lua_name": "Gemini 2G4RX",
+                "layout_file": "Alz 2400 Gemini.json",
+                "overlay": {
+                    "radio_dcdc": true
+                },
+                "upload_methods": ["uart", "wifi", "betaflight"],
+                "platform": "esp32",
+                "firmware": "Unified_ESP32_2400_RX",
+                "prior_target_name": "Alz_Gemini_2400_RX"
+            },
             "diversity": {
                 "product_name": "Alz True Diversity PA 2.4Ghz RX",
                 "lua_name": "Gemini 2G4RX",
