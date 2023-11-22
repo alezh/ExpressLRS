@@ -80,10 +80,12 @@
                 "product_name": "Alz 2.4Ghz Gemini TX",
                 "lua_name": "Alz Gemini2G4TX",
                 "layout_file": "Alz 2400 Gemini.json",
+                "features": ["fan"],
                 "upload_methods": ["uart", "wifi"],
                 "platform": "esp32",
                 "logo_file": "axis_tft.bin",
-                "firmware": "Unified_ESP32_2400_TX"
+                "firmware": "Unified_ESP32_2400_TX",
+                "prior_target_name": "Alz_2400_TX_GEMINI"
             },
             "mini": {
                 "product_name": "Alz 2.4Ghz Gemini Mini TX",

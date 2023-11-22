@@ -1,5 +1,4 @@
 {
-
     "serial_rx": 19,
     "serial_tx": 19,
 
@@ -21,6 +20,7 @@
     "power_txen": 14,
     "power_rxen_2": 9,
     "power_txen_2": 15,
+
     "power_lna_gain": 12,
 
     "radio_dcdc": true,
