@@ -30,7 +30,7 @@
     "power_max": 5,
     "power_default": 2,
     "power_control": 0,
-    "power_values": [-15,-9,-4,0,2],
+    "power_values": [-16,-14,-10,-5,2],
 
     "joystick": 35,
     "joystick_values": [1365, 3276, 2048, 2730, 0, 4095],
@@ -39,11 +39,12 @@
     "led_rgb_isgrb": true,
 
     "screen_type": 4,
+
     "screen_cs": 2,
     "screen_dc": 12,
-    "screen_mosi": 16,
+    "screen_mosi": 23,
     "screen_rst": 5,
-    "screen_sck": 17,
+    "screen_sck": 18,
 
     "use_backpack": true,
     "debug_backpack_baud": 460800,
