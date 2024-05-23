@@ -24,7 +24,10 @@
 #define GPIO_PIN_SCK hardware_pin(HARDWARE_radio_sck)
 #define USE_HARDWARE_DCDC
 #define OPT_USE_HARDWARE_DCDC hardware_flag(HARDWARE_radio_dcdc)
-
+#define USE_SX126x_DCDC
+#define OPT_USE_SX126x_DCDC hardware_flag(HARDWARE_sx126x_radio_dcdc)
+#define USE_SX126x_TCXO
+#define OPT_USE_SX126x_TCXO hardware_flag(HARDWARE_sx126x_radio_tcxo)
 // Radio power
 #define GPIO_PIN_PA_ENABLE hardware_pin(HARDWARE_power_enable)
 #define GPIO_PIN_RFamp_APC1 hardware_pin(HARDWARE_power_apc1)

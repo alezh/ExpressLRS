@@ -40,6 +40,8 @@ def build_html(mainfile, var, out, env, isTX=False):
         chip = 'SX127X'
     elif '-DRADIO_LR1121=1' in env['BUILD_FLAGS']:
         chip = 'LR1121'
+    elif '-DRADIO_SX126X=1' in env['BUILD_FLAGS']:
+        chip = 'SX126X'
     data = template.render({
             'VERSION': get_version(env),
             'PLATFORM': re.sub("_via_.*", "", env['PIOENV']),

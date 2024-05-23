@@ -3,7 +3,7 @@
 #include "targets.h"
 #include "random.h"
 
-#if defined(RADIO_SX127X)
+#if defined(RADIO_SX127X) || defined(RADIO_SX126X)
 #define FreqCorrectionMax ((int32_t)(100000/FREQ_STEP))
 #elif defined(RADIO_LR1121)
 #define FreqCorrectionMax ((int32_t)(100000/FREQ_STEP)) // TODO - This needs checking !!!
@@ -172,7 +172,7 @@ static inline uint32_t FHSSGeminiFreq(uint8_t FHSSsequenceIdx)
 {
     uint32_t freq;
     uint32_t numfhss = FHSSgetChannelCount();
-    uint8_t offSetIdx = (FHSSsequenceIdx + (numfhss / 2)) % numfhss; 
+    uint8_t offSetIdx = (FHSSsequenceIdx + (numfhss / 2)) % numfhss;
 
     if (FHSSusePrimaryFreqBand)
     {

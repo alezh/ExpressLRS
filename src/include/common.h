@@ -9,6 +9,8 @@
 #include "LR1121Driver.h"
 #elif defined(RADIO_SX128X)
 #include "SX1280Driver.h"
+#elif defined(RADIO_SX126X)
+#include "SX126xDriver.h"
 #else
 #error "Radio configuration is not valid!"
 #endif
@@ -256,6 +258,12 @@ extern LR1121Driver Radio;
 #define RATE_BINDING RATE_LORA_50HZ
 
 extern SX1280Driver Radio;
+
+#elif defined(RADIO_SX126X)
+#define RATE_MAX 8
+#define RATE_BINDING RATE_LORA_50HZ
+
+extern SX126xDriver Radio;
 #endif
 #endif // UNIT_TEST
 
