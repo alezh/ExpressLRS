@@ -556,6 +556,10 @@ static void WebUpdateGetTarget(AsyncWebServerRequest *request)
   json["radio-type"] = "SX127X";
   json["has-sub-ghz"] = true;
 #endif
+#if defined(RADIO_SX126X)
+  json["radio-type"] = "SX126X";
+  json["has-sub-ghz"] = true;
+#endif
 #if defined(RADIO_LR1121)
   json["radio-type"] = "LR1121";
   json["has-sub-ghz"] = true;
