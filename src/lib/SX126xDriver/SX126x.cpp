@@ -108,7 +108,10 @@ bool SX126xDriver::Begin(uint32_t minimumFrequency, uint32_t maximumFrequency)
         hal.WriteCommand(SX126x_RADIO_SET_REGULATORMODE, SX126x_USE_DCDC, SX12XX_Radio_All);        // Enable DCDC converter instead of LDO
     }
 #endif
-
+    uint8_t CalImagebuf[2];
+    CalImagebuf[0] = ((minimumFrequency / 1000000 ) - 1) / 4;       // Freq1 = floor( (fmin_mhz - 1)/4)
+    CalImagebuf[1] = 1 + ((maximumFrequency / 1000000 ) + 1) / 4;   // Freq2 = ceil( (fmax_mhz + 1)/4)
+    DBGLN("Config LoRa fmin_mhz %u  fmax_mhz %u ", minimumFrequency, maximumFrequency);
     return true;
 }
 
@@ -254,45 +257,12 @@ void ICACHE_RAM_ATTR SX126xDriver::CommitOutputPower()
     pwrCurrent = pwrPending;
     pwrPending = PWRPENDING_NONE;
 
-    uint8_t pwrOffset = 0x00;
-    uint8_t paDutyCycle = 0x04;
-    uint8_t hpMax = 0x07;
-
-    if (pwrCurrent > 30) // power range -9 to -1.
-    {
-        pwrOffset = 0x08;
-        paDutyCycle = 0x02;
-        hpMax = 0x02;
-    }
-    else if (pwrCurrent > 20)
-    {
-        paDutyCycle = 0x04;
-        hpMax = 0x07;
-    }
-    else if (pwrCurrent > 17)
-    {
-        pwrOffset = 0x02;
-        paDutyCycle = 0x03;
-        hpMax = 0x05;
-    }
-    else if (pwrCurrent > 14)
-    {
-        pwrOffset = 0x05;
-        paDutyCycle = 0x02;
-        hpMax = 0x3;
-    }
-    else
-    {
-        pwrOffset = 0x08;
-        paDutyCycle = 0x02;
-        hpMax = 0x02;
-    }
-    DBGLN("pwrCurrent: %u  pwrOffset: %u", pwrCurrent, pwrOffset);
+    DBGLN("pwrCurrent: %u ", pwrCurrent);
     // PA Operating Modes with Optimal Settings
-    uint8_t paparams[4] = {paDutyCycle, hpMax, 0x00, 0x01};
+    uint8_t paparams[4] = {0x04, 0x07, 0x00, 0x01};
     hal.WriteCommand(SX126x_RADIO_SET_PACONFIG, paparams, sizeof(paparams), SX12XX_Radio_All, 25);
 
-    uint8_t buf[2] = {pwrCurrent + pwrOffset, (uint8_t)SX126x_RADIO_RAMP_10_US};
+    uint8_t buf[2] = {pwrCurrent, (uint8_t)SX126x_RADIO_RAMP_10_US};
     hal.WriteCommand(SX126x_RADIO_SET_TXPARAMS, buf, sizeof(buf), SX12XX_Radio_All);
 }
 
@@ -434,6 +404,8 @@ void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyHz(uint32_t freq, SX12XX_Radio_Nu
 
 void ICACHE_RAM_ATTR SX126xDriver::SetFrequencyReg(uint32_t regfreq, SX12XX_Radio_Number_t radioNumber)
 {
+    DBGLN("Frequency: %u", regfreq);
+
     WORD_ALIGNED_ATTR uint8_t buf[4] = {0};
 
     buf[0] = (uint8_t)((regfreq >> 24) & 0xFF);
