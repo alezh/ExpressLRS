@@ -42,12 +42,17 @@ def build_html(mainfile, var, out, env, isTX=False):
         chip = 'LR1121'
     elif '-DRADIO_SX126X=1' in env['BUILD_FLAGS']:
         chip = 'SX126X'
+    if 'ESP8285' in env['PIOENV']:
+        is8285 = True
+    else:
+        is8285 = False
     data = template.render({
             'VERSION': get_version(env),
             'PLATFORM': re.sub("_via_.*", "", env['PIOENV']),
             'isTX': isTX,
             'hasSubGHz': has_sub_ghz,
-            'chip': chip
+            'chip': chip,
+            'is8285': is8285
         })
     if mainfile.endswith('.html'):
         data = html_minifier.html_minify(data)
