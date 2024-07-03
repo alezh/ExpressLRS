@@ -18,6 +18,9 @@
 #if defined(RADIO_SX127X)
 #define STR_LUA_PACKETRATES \
     "D50Hz(-112dBm);25Hz(-123dBm);50Hz(-120dBm);100Hz(-117dBm);100Hz Full(-112dBm);200Hz(-112dBm)"
+#elif defined(RADIO_SX126X)
+#define STR_LUA_PACKETRATES \
+    "D50Hz(-111dBm);25Hz(-123dBm);50Hz(-120dBm);100Hz(-117dBm);100Hz Full(-112dBm);250Hz(-111dBm)";
 #elif defined(RADIO_LR1121)
 #define STR_LUA_PACKETRATES \
     "50Hz 2.4G;100Hz Full 2.4G;150Hz 2.4G;250Hz 2.4G;333Hz Full 2.4G;500Hz 2.4G;" \
