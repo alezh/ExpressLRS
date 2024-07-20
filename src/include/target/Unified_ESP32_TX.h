@@ -58,6 +58,9 @@
 #define OPT_USE_HARDWARE_DCDC hardware_flag(HARDWARE_radio_dcdc)
 #define USE_SX1276_RFO_HF
 #define OPT_USE_SX1276_RFO_HF hardware_flag(HARDWARE_radio_rfo_hf)
+#define LR1121_RFSW_CTRL hardware_u16_array(HARDWARE_radio_rfsw_ctrl)
+#define LR1121_RFSW_CTRL_COUNT hardware_int(HARDWARE_radio_rfsw_ctrl_count)
+
 #define USE_SX126x_DCDC
 #define OPT_USE_SX126x_DCDC hardware_flag(HARDWARE_sx126x_radio_dcdc)
 #define USE_SX126x_TCXO

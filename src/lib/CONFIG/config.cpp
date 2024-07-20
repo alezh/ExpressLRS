@@ -1189,6 +1189,7 @@ void RxConfig::SetSerialProtocol(eSerialProtocol serialProtocol)
     }
 }
 
+#if defined(PLATFORM_ESP32)
 void RxConfig::SetSerial1Protocol(eSerial1Protocol serialProtocol)
 {
     if (m_config.serial1Protocol != serialProtocol)
@@ -1197,6 +1198,7 @@ void RxConfig::SetSerial1Protocol(eSerial1Protocol serialProtocol)
         m_modified = true;
     }
 }
+#endif
 
 void RxConfig::SetTeamraceChannel(uint8_t teamraceChannel)
 {
