@@ -13,7 +13,7 @@ void convert_mavlink_to_crsf_telem(uint8_t *CRSFinBuffer, uint8_t count, Handset
     {
         mavlink_message_t msg;
         mavlink_status_t status;
-        bool have_message = mavlink_parse_char(MAVLINK_COMM_0, CRSFinBuffer[CRSF_FRAME_NOT_COUNTED_BYTES + i], &msg, &status);
+        bool have_message = mavlink_frame_char(MAVLINK_COMM_0, CRSFinBuffer[CRSF_FRAME_NOT_COUNTED_BYTES + i], &msg, &status);
         // convert mavlink messages to CRSF messages
         if (have_message)
         {
@@ -104,4 +104,25 @@ void convert_mavlink_to_crsf_telem(uint8_t *CRSFinBuffer, uint8_t count, Handset
         }
     }
 #endif
+}
+
+bool isThisAMavPacket(uint8_t *buffer, uint16_t bufferSize)
+{
+#if !defined(PLATFORM_STM32)
+    for (uint8_t i = 0; i < bufferSize; ++i)
+    {
+        uint8_t c = buffer[i];
+
+        mavlink_message_t msg;
+        mavlink_status_t status;
+
+        // Try parse a mavlink message
+        if (mavlink_frame_char(MAVLINK_COMM_0, c, &msg, &status))
+        {
+            // Message decoded successfully
+            return true;
+        }
+    }
+#endif
+    return false;
 }
