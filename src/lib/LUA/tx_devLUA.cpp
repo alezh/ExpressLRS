@@ -237,15 +237,6 @@ static struct luaItem_command luaVtxSend = {
 };
 //----------------------------VTX ADMINISTRATOR------------------
 
-#if defined(TARGET_TX_FM30)
-struct luaItem_selection luaBluetoothTelem = {
-    {"BT Telemetry", CRSF_TEXT_SELECTION},
-    0, // value
-    luastrOffOn,
-    STR_EMPTYSPACE
-};
-#endif
-
 //---------------------------- BACKPACK ------------------
 static struct luaItem_folder luaBackpackFolder = {
     {"Backpack", CRSF_FOLDER},
@@ -292,7 +283,7 @@ static struct luaItem_selection luaHeadTrackingStartChannel = {
 static struct luaItem_selection luaBackpackTelemetry = {
     {"Telemetry", CRSF_TEXT_SELECTION},
     0, // value
-    luastrOffOn,
+    "Off;ESPNOW;WiFi",
     STR_EMPTYSPACE};
 
 static struct luaItem_string luaBackpackVersion = {
@@ -310,6 +301,7 @@ extern void ResetPower();
 extern uint8_t adjustPacketRateForBaud(uint8_t rate);
 extern void SetSyncSpam();
 extern bool RxWiFiReadyToSend;
+extern bool BackpackTelemReadyToSend;
 #if defined(USE_TX_BACKPACK)
 extern bool TxBackpackWiFiReadyToSend;
 extern bool VRxBackpackWiFiReadyToSend;
@@ -591,11 +583,8 @@ static void recalculatePacketRateOptions(int minInterval)
     for (int i=0 ; i < RATE_MAX ; i++)
     {
         uint8_t rate = i;
-#if defined(RADIO_LR1121) // Janky fix to order menu correctly
-        rate = (rate + 4) % RATE_MAX;
-#endif
         rate = RATE_MAX - 1 - rate;
-        bool rateAllowed = get_elrs_airRateConfig(rate)->interval >= minInterval;
+        bool rateAllowed = (get_elrs_airRateConfig(rate)->interval * get_elrs_airRateConfig(rate)->numOfSends) >= minInterval;
         const char *semi = strchrnul(pos, ';');
         if (rateAllowed)
         {
@@ -670,12 +659,6 @@ static void registerLuaParameters()
         }
       }
     });
-    #if defined(TARGET_TX_FM30)
-    registerLUAParameter(&luaBluetoothTelem, [](struct luaPropertiesCommon *item, uint8_t arg) {
-      digitalWrite(GPIO_PIN_BLUETOOTH_EN, !arg);
-      devicesTriggerEvent();
-    });
-    #endif
     if (!firmwareOptions.is_airport)
     {
       registerLUAParameter(&luaSwitch, [](struct luaPropertiesCommon *item, uint8_t arg) {
@@ -835,7 +818,8 @@ static void registerLuaParameters()
           luaBackpackFolder.common.id);
       registerLUAParameter(
             &luaBackpackTelemetry, [](luaPropertiesCommon *item, uint8_t arg) {
-                config.SetBackpackTlmEnabled(arg);
+                config.SetBackpackTlmMode(arg);
+                BackpackTelemReadyToSend = true;
             }, luaBackpackFolder.common.id);
 
       registerLUAParameter(&luaBackpackVersion, nullptr, luaBackpackFolder.common.id);
@@ -918,12 +902,9 @@ static int event()
     setLuaTextSelectionValue(&luaDvrStopDelay, config.GetBackpackDisable() ? 0 : config.GetDvrStopDelay());
     setLuaTextSelectionValue(&luaHeadTrackingEnableChannel, config.GetBackpackDisable() ? 0 : config.GetPTREnableChannel());
     setLuaTextSelectionValue(&luaHeadTrackingStartChannel, config.GetBackpackDisable() ? 0 : config.GetPTRStartChannel());
-    setLuaTextSelectionValue(&luaBackpackTelemetry, config.GetBackpackTlmEnabled() ? 1 : 0);
+    setLuaTextSelectionValue(&luaBackpackTelemetry, config.GetBackpackDisable() ? 0 : config.GetBackpackTlmMode());
     setLuaStringValue(&luaBackpackVersion, backpackVersion);
   }
-#if defined(TARGET_TX_FM30)
-  setLuaTextSelectionValue(&luaBluetoothTelem, !digitalRead(GPIO_PIN_BLUETOOTH_EN));
-#endif
   luadevUpdateFolderNames();
   return DURATION_IMMEDIATELY;
 }
