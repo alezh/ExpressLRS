@@ -16,21 +16,6 @@ static uint32_t endTX;
 
 #define RX_TIMEOUT_PERIOD_BASE_NANOS 15625
 
-#ifdef USE_SX126x_DCDC
-    #ifndef OPT_USE_SX126x_DCDC
-        #define OPT_USE_SX126x_DCDC true
-    #endif
-#else
-    #define OPT_USE_SX126x_DCDC false
-#endif
-
-#ifdef USE_SX126x_TCXO
-    #ifndef OPT_USE_SX126x_TCXO
-        #define OPT_USE_SX126x_TCXO true
-    #endif
-#else
-    #define OPT_USE_SX126x_TCXO false
-#endif
 
 SX126xDriver::SX126xDriver(): SX12xxDriverCommon()
 {
@@ -91,23 +76,18 @@ bool SX126xDriver::Begin(uint32_t minimumFrequency, uint32_t maximumFrequency)
     hal.WriteCommand(SX126x_RADIO_SET_DIO2ASSWITCHCTRL, SX126x_DIO2ASSWITCHCTRL_ON, SX12XX_Radio_All);
 
     osc_configuration = RADIOLIB_SX126x_DIO3_OUTPUT_1_8;
-
-#if defined(USE_SX126x_TCXO)
     if (OPT_USE_SX126x_TCXO)
     {
         SetDio3AsTcxoControl(osc_configuration, 250);
     }
-#endif
     // Force the next power update, and the lowest power
     pwrCurrent = PWRPENDING_NONE;
     SetOutputPower(SX126x_POWER_MIN);
     CommitOutputPower();
-#if defined(USE_SX126x_DCDC)
     if (OPT_USE_SX126x_DCDC)
     {
         hal.WriteCommand(SX126x_RADIO_SET_REGULATORMODE, SX126x_USE_DCDC, SX12XX_Radio_All);        // Enable DCDC converter instead of LDO
     }
-#endif
     uint8_t CalImagebuf[2];
     CalImagebuf[0] = ((minimumFrequency / 1000000 ) - 1) / 4;       // Freq1 = floor( (fmin_mhz - 1)/4)
     CalImagebuf[1] = 1 + ((maximumFrequency / 1000000 ) + 1) / 4;   // Freq2 = ceil( (fmax_mhz + 1)/4)
