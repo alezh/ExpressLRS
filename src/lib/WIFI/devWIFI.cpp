@@ -576,6 +576,10 @@ static void WebUpdateGetTarget(AsyncWebServerRequest *request)
   json["radio-type"] = "LR1121";
   json["has-sub-ghz"] = true;
 #endif
+#if defined(RADIO_SX126X)
+  json["radio-type"] = "SX126X";
+  json["has-sub-ghz"] = true;
+#endif
 
   AsyncResponseStream *response = request->beginResponseStream("application/json");
   serializeJson(json, *response);
